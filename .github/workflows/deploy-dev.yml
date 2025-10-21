@@ -1,0 +1,61 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to dev.matt-dev.com
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to development server
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key $USER@$HOST << 'ENDSSH'
+            # Navigate to project directory or clone if needed
+            if [ ! -d "/var/www/matt-dev.com/dev" ]; then
+              sudo mkdir -p /var/www/matt-dev.com/dev
+              sudo chown -R $USER:$USER /var/www/matt-dev.com
+            fi
+
+            cd /var/www/matt-dev.com/dev
+
+            # Clone or update repository
+            if [ -d ".git" ]; then
+              echo "Updating existing repository..."
+              git fetch origin
+              git reset --hard origin/main
+            else
+              echo "Cloning repository..."
+              git clone --branch main https://github.com/mreedthings/matt-dev.com.git .
+            fi
+
+            # Install dependencies if needed
+            if [ -f "package.json" ]; then
+              npm ci --production
+            fi
+
+            # Set permissions
+            chmod -R 755 /var/www/matt-dev.com/dev
+
+            echo "Development deployment complete!"
+          ENDSSH
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
