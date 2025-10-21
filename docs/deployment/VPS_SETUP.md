@@ -49,7 +49,7 @@ server {
     listen 80;
     server_name matt-dev.com www.matt-dev.com;
 
-    root /var/www/matt-dev.com/production;
+    root /var/www/matt-dev.com/production/public;
     index index.html index.htm;
 
     location / {
@@ -64,7 +64,7 @@ server {
     listen 80;
     server_name dev.matt-dev.com;
 
-    root /var/www/matt-dev.com/dev;
+    root /var/www/matt-dev.com/dev/public;
     index index.html index.htm;
 
     location / {
