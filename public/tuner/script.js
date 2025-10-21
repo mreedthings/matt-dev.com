@@ -24,6 +24,11 @@ let audioContext = null;
 // Track currently playing string for visual feedback
 let currentlyPlayingElement = null;
 
+// Track currently playing note to prevent overlapping instances
+let currentOscillator = null;
+let currentFrequency = null;
+let currentStopTimeout = null;
+
 /**
  * Initialize AudioContext with error handling
  * AudioContext must be created after user interaction in modern browsers
@@ -40,6 +45,26 @@ function initAudioContext() {
         showError('Your browser does not support the Web Audio API. Please try a modern browser like Chrome, Firefox, or Safari.');
         console.error('AudioContext initialization failed:', error);
         return false;
+    }
+}
+
+/**
+ * Stop the currently playing note
+ */
+function stopCurrentNote() {
+    if (currentOscillator) {
+        try {
+            currentOscillator.stop();
+        } catch (error) {
+            // Oscillator may have already stopped, ignore error
+        }
+        currentOscillator = null;
+        currentFrequency = null;
+    }
+
+    if (currentStopTimeout) {
+        clearTimeout(currentStopTimeout);
+        currentStopTimeout = null;
     }
 }
 
@@ -70,13 +95,14 @@ function showInfo(message) {
  * Play a tone at specified frequency with proper cleanup
  * @param {number} frequency - Frequency in Hz
  * @param {number} duration - Duration in seconds
+ * @returns {Object|null} Object with oscillator and filter/gain nodes, or null if failed
  */
 function playTone(frequency, duration) {
     // Validate inputs
     const validDuration = Math.max(0, Math.min(duration, 30)); // Cap at 30 seconds
 
     if (!initAudioContext()) {
-        return;
+        return null;
     }
 
     // Create audio nodes
@@ -112,7 +138,15 @@ function playTone(frequency, duration) {
         oscillator.disconnect();
         filter.disconnect();
         gainNode.disconnect();
+
+        // Clear tracking if this is the oscillator we're tracking
+        if (currentOscillator === oscillator) {
+            currentOscillator = null;
+            currentFrequency = null;
+        }
     };
+
+    return { oscillator, filter, gainNode };
 }
 
 /**
@@ -121,7 +155,11 @@ function playTone(frequency, duration) {
  * @param {HTMLElement} element - DOM element that was activated
  */
 function handleStringActivation(guitarString, element) {
-    // Don't allow overlapping tones
+    // Stop any currently playing note (same or different)
+    // This prevents overlapping tones and ensures only one note plays at a time
+    stopCurrentNote();
+
+    // Remove visual feedback from previously playing element
     if (currentlyPlayingElement) {
         currentlyPlayingElement.classList.remove('playing');
     }
@@ -137,16 +175,21 @@ function handleStringActivation(guitarString, element) {
     // Show info message
     showInfo(`Playing ${guitarString.note} (${guitarString.freq.toFixed(2)} Hz)`);
 
-    // Play the tone
-    playTone(guitarString.freq, duration);
+    // Play the tone and track the oscillator
+    const result = playTone(guitarString.freq, duration);
+    if (result) {
+        currentOscillator = result.oscillator;
+        currentFrequency = guitarString.freq;
+    }
 
     // Remove visual feedback when done
-    setTimeout(() => {
+    currentStopTimeout = setTimeout(() => {
         if (currentlyPlayingElement === element) {
             element.classList.remove('playing');
             currentlyPlayingElement = null;
             showInfo('Click or press Enter on a string to play its note');
         }
+        currentStopTimeout = null;
     }, duration * 1000);
 }
 
