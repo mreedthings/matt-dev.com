@@ -182,6 +182,46 @@ function createStringElement(guitarString) {
 }
 
 /**
+ * Handle global keyboard shortcuts for playing strings
+ * @param {KeyboardEvent} event - Keyboard event
+ */
+function handleGlobalKeyboard(event) {
+    // Ignore if user is typing in an input or select element
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'TEXTAREA') {
+        return;
+    }
+
+    // Map of keys to string indices
+    const keyMap = {
+        'e': 0,  // E (Lowest)
+        'a': 1,  // A
+        'd': 2,  // D
+        'g': 3,  // G
+        'b': 4,  // B
+        '1': 0,  // String 1: E (Lowest)
+        '2': 1,  // String 2: A
+        '3': 2,  // String 3: D
+        '4': 3,  // String 4: G
+        '5': 4,  // String 5: B
+        '6': 5   // String 6: E (Highest)
+    };
+
+    const key = event.key.toLowerCase();
+    const stringIndex = keyMap[key];
+
+    if (stringIndex !== undefined) {
+        event.preventDefault(); // Prevent default browser behavior
+
+        const container = document.getElementById('guitarStrings');
+        const stringElements = container.querySelectorAll('.string');
+
+        if (stringElements[stringIndex]) {
+            handleStringActivation(GUITAR_STRINGS[stringIndex], stringElements[stringIndex]);
+        }
+    }
+}
+
+/**
  * Initialize the application
  */
 function init() {
@@ -193,8 +233,11 @@ function init() {
         container.appendChild(stringElement);
     });
 
+    // Add global keyboard listener for note shortcuts
+    document.addEventListener('keydown', handleGlobalKeyboard);
+
     // Set initial info message
-    showInfo('Click or press Enter on a string to play its note');
+    showInfo('Click, press Enter, or type a note letter (E, A, D, G, B) or number (1-6) to play');
 
     // Check for Web Audio API support
     if (!window.AudioContext && !window.webkitAudioContext) {
