@@ -53,6 +53,14 @@ jobs:
             # Set permissions
             chmod -R 755 /var/www/matt-dev.com/dev
 
+            # Verify deployment
+            echo "Verifying deployment..."
+            echo "Main site files:"
+            ls -la /var/www/matt-dev.com/dev/public/ | head -10
+            echo ""
+            echo "Tuner project files:"
+            ls -la /var/www/matt-dev.com/dev/public/tuner/ | head -10
+
             echo "Development deployment complete!"
           ENDSSH
 
