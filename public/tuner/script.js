@@ -24,6 +24,13 @@ let audioContext = null;
 // Track currently playing string for visual feedback
 let currentlyPlayingElement = null;
 
+// Track currently playing note to prevent overlapping instances
+let currentOscillator = null;
+let currentFilter = null;
+let currentGainNode = null;
+let currentFrequency = null;
+let currentAudioStopTimeout = null;
+
 /**
  * Initialize AudioContext with error handling
  * AudioContext must be created after user interaction in modern browsers
@@ -41,6 +48,40 @@ function initAudioContext() {
         console.error('AudioContext initialization failed:', error);
         return false;
     }
+}
+
+/**
+ * Stop the currently playing note and clean up audio nodes
+ */
+function stopCurrentNote() {
+    // Cancel any scheduled stop
+    if (currentAudioStopTimeout) {
+        clearTimeout(currentAudioStopTimeout);
+        currentAudioStopTimeout = null;
+    }
+
+    // Stop and disconnect audio nodes
+    if (currentOscillator) {
+        try {
+            currentOscillator.stop();
+            currentOscillator.disconnect();
+        } catch (error) {
+            // Oscillator may have already stopped, ignore error
+        }
+        currentOscillator = null;
+    }
+
+    if (currentFilter) {
+        currentFilter.disconnect();
+        currentFilter = null;
+    }
+
+    if (currentGainNode) {
+        currentGainNode.disconnect();
+        currentGainNode = null;
+    }
+
+    currentFrequency = null;
 }
 
 /**
@@ -67,16 +108,15 @@ function showInfo(message) {
 }
 
 /**
- * Play a tone at specified frequency with proper cleanup
+ * Play a tone at specified frequency
+ * Note: This function starts the oscillator but doesn't schedule when it stops.
+ * The caller must manage stopping it via stopCurrentNote() or scheduling a timeout.
  * @param {number} frequency - Frequency in Hz
- * @param {number} duration - Duration in seconds
+ * @returns {Object|null} Object with oscillator and filter/gain nodes, or null if failed
  */
-function playTone(frequency, duration) {
-    // Validate inputs
-    const validDuration = Math.max(0, Math.min(duration, 30)); // Cap at 30 seconds
-
+function playTone(frequency) {
     if (!initAudioContext()) {
-        return;
+        return null;
     }
 
     // Create audio nodes
@@ -100,19 +140,33 @@ function playTone(frequency, duration) {
     filter.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    // Schedule playback
-    const startTime = audioContext.currentTime;
-    const stopTime = startTime + validDuration;
+    // Start playing immediately (no scheduled stop - caller manages this)
+    oscillator.start(audioContext.currentTime);
 
-    oscillator.start(startTime);
-    oscillator.stop(stopTime);
+    return { oscillator, filter, gainNode };
+}
 
-    // Clean up nodes after playback to prevent memory leaks
-    oscillator.onended = () => {
-        oscillator.disconnect();
-        filter.disconnect();
-        gainNode.disconnect();
-    };
+/**
+ * Schedule the stop of audio playback and visual feedback
+ * @param {HTMLElement} element - DOM element showing visual feedback
+ * @param {number} duration - Duration in seconds before stopping
+ */
+function scheduleNoteStop(element, duration) {
+    // Clear any existing scheduled stop
+    if (currentAudioStopTimeout) {
+        clearTimeout(currentAudioStopTimeout);
+    }
+
+    // Schedule audio and visual cleanup
+    currentAudioStopTimeout = setTimeout(() => {
+        stopCurrentNote();
+
+        if (currentlyPlayingElement === element) {
+            element.classList.remove('playing');
+            currentlyPlayingElement = null;
+            showInfo('Click or press Enter on a string to play its note');
+        }
+    }, duration * 1000);
 }
 
 /**
@@ -121,33 +175,45 @@ function playTone(frequency, duration) {
  * @param {HTMLElement} element - DOM element that was activated
  */
 function handleStringActivation(guitarString, element) {
-    // Don't allow overlapping tones
-    if (currentlyPlayingElement) {
-        currentlyPlayingElement.classList.remove('playing');
-    }
-
-    // Visual feedback
-    element.classList.add('playing');
-    currentlyPlayingElement = element;
-
     // Get selected duration
     const durationSelect = document.getElementById('durationSelect');
     const duration = parseFloat(durationSelect.value);
 
-    // Show info message
-    showInfo(`Playing ${guitarString.note} (${guitarString.freq.toFixed(2)} Hz)`);
+    // Check if we're clicking the same note that's currently playing
+    const isSameNote = currentFrequency === guitarString.freq && currentOscillator;
 
-    // Play the tone
-    playTone(guitarString.freq, duration);
+    if (isSameNote) {
+        // Same note - just extend the duration (keeps audio continuous)
+        showInfo(`Extending ${guitarString.note} (${guitarString.freq.toFixed(2)} Hz)`);
+        scheduleNoteStop(element, duration);
+    } else {
+        // Different note or no note playing - stop current and start new
+        stopCurrentNote();
 
-    // Remove visual feedback when done
-    setTimeout(() => {
-        if (currentlyPlayingElement === element) {
-            element.classList.remove('playing');
-            currentlyPlayingElement = null;
-            showInfo('Click or press Enter on a string to play its note');
+        // Remove visual feedback from previously playing element
+        if (currentlyPlayingElement && currentlyPlayingElement !== element) {
+            currentlyPlayingElement.classList.remove('playing');
         }
-    }, duration * 1000);
+
+        // Visual feedback
+        element.classList.add('playing');
+        currentlyPlayingElement = element;
+
+        // Show info message
+        showInfo(`Playing ${guitarString.note} (${guitarString.freq.toFixed(2)} Hz)`);
+
+        // Play the tone and track the oscillator
+        const result = playTone(guitarString.freq);
+        if (result) {
+            currentOscillator = result.oscillator;
+            currentFilter = result.filter;
+            currentGainNode = result.gainNode;
+            currentFrequency = guitarString.freq;
+        }
+
+        // Schedule when to stop
+        scheduleNoteStop(element, duration);
+    }
 }
 
 /**
@@ -182,6 +248,46 @@ function createStringElement(guitarString) {
 }
 
 /**
+ * Handle global keyboard shortcuts for playing strings
+ * @param {KeyboardEvent} event - Keyboard event
+ */
+function handleGlobalKeyboard(event) {
+    // Ignore if user is typing in an input or select element
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'TEXTAREA') {
+        return;
+    }
+
+    // Map of keys to string indices
+    const keyMap = {
+        'e': 0,  // E (Lowest)
+        'a': 1,  // A
+        'd': 2,  // D
+        'g': 3,  // G
+        'b': 4,  // B
+        '1': 0,  // String 1: E (Lowest)
+        '2': 1,  // String 2: A
+        '3': 2,  // String 3: D
+        '4': 3,  // String 4: G
+        '5': 4,  // String 5: B
+        '6': 5   // String 6: E (Highest)
+    };
+
+    const key = event.key.toLowerCase();
+    const stringIndex = keyMap[key];
+
+    if (stringIndex !== undefined) {
+        event.preventDefault(); // Prevent default browser behavior
+
+        const container = document.getElementById('guitarStrings');
+        const stringElements = container.querySelectorAll('.string');
+
+        if (stringElements[stringIndex]) {
+            handleStringActivation(GUITAR_STRINGS[stringIndex], stringElements[stringIndex]);
+        }
+    }
+}
+
+/**
  * Initialize the application
  */
 function init() {
@@ -193,8 +299,11 @@ function init() {
         container.appendChild(stringElement);
     });
 
+    // Add global keyboard listener for note shortcuts
+    document.addEventListener('keydown', handleGlobalKeyboard);
+
     // Set initial info message
-    showInfo('Click or press Enter on a string to play its note');
+    showInfo('Click, press Enter, or type a note letter (E, A, D, G, B) or number (1-6) to play');
 
     // Check for Web Audio API support
     if (!window.AudioContext && !window.webkitAudioContext) {

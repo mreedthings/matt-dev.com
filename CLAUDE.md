@@ -5,11 +5,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Personal website and learning platform for matt-dev.com. This project serves multiple purposes:
-- Hobby coding and experimentation
+- Portfolio of web projects and experiments
 - Learning DevOps practices (GitHub Actions, VPS management, environment separation)
+- Hobby coding and experimentation
 - Potential microblogging platform
-- Portfolio showcase
 - Educational exploration with potential for future monetization
+
+## Project Structure
+
+```
+matt-dev.com/
+├── public/              # Website root
+│   ├── index.html       # Homepage
+│   ├── style.css
+│   └── tuner/           # Guitar tuner web app
+├── .github/workflows/   # CI/CD automation
+├── docs/deployment/     # Infrastructure documentation
+└── scripts/             # Deployment scripts
+```
+
+**Projects:**
+- **Guitar Tuner** (`/tuner`) - Interactive web-based guitar tuner with keyboard controls and visual feedback
 
 ## Infrastructure
 
