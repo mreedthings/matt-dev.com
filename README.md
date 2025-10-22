@@ -1,51 +1,56 @@
 # matt-dev.com
 
-Personal website and DevOps learning platform. This project serves as both a portfolio showcase and a hands-on learning experience with modern development practices.
+Personal website and DevOps learning platform. Portfolio of web projects with automated deployment pipeline.
 
-## 🚀 Live Sites
+## Live Sites
 
-- **Production**: https://matt-dev.com (prod branch)
-- **Development**: https://dev.matt-dev.com (main branch)
+- **Production**: https://matt-dev.com
+- **Development**: https://dev.matt-dev.com
 
-## 🏗️ Architecture
+## Projects
+
+- **[Guitar Tuner](/public/tuner)** - Interactive web-based guitar tuner ([live demo](https://matt-dev.com/tuner))
+
+## Architecture
 
 Single DigitalOcean VPS with multi-environment setup:
 - `/var/www/matt-dev.com/production/` - Production environment
 - `/var/www/matt-dev.com/dev/` - Development environment
 
-## 🔄 Deployment
+## Deployment
 
 Automated CI/CD via GitHub Actions:
 - Push to `main` → auto-deploys to dev.matt-dev.com
 - Push to `prod` → auto-deploys to matt-dev.com
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 matt-dev.com/
-├── public/              # Website files
-│   ├── index.html
-│   └── style.css
+├── public/              # Website root
+│   ├── index.html       # Homepage
+│   ├── style.css
+│   └── tuner/           # Guitar tuner web app
 ├── .github/workflows/   # CI/CD automation
-├── docs/deployment/     # Setup and deployment guides
+├── docs/deployment/     # Infrastructure documentation
 ├── scripts/             # Deployment scripts
 └── CLAUDE.md           # Development guidance
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- Static HTML/CSS (for now)
+- Static HTML/CSS/JavaScript
 - nginx web server
 - GitHub Actions for CI/CD
 - DigitalOcean VPS hosting
 
-## 📚 Documentation
+## Documentation
 
-- **[VPS Setup](docs/deployment/VPS_SETUP.md)** - Complete server configuration
-- **[DNS Setup](docs/deployment/DNS_SETUP.md)** - Domain configuration
-- **[Deployment Overview](docs/deployment/README.md)** - Architecture and workflows
+- [VPS Setup](docs/deployment/VPS_SETUP.md) - Server configuration
+- [DNS Setup](docs/deployment/DNS_SETUP.md) - Domain configuration
+- [Deployment Overview](docs/deployment/README.md) - Architecture and workflows
 
-## 🎯 Learning Goals
+## Learning Goals
 
 - Git and GitHub workflows (branching, PRs, Actions)
 - VPS management and deployment
@@ -54,7 +59,7 @@ matt-dev.com/
 - Infrastructure as code concepts
 - Web server configuration
 
-## 🚦 Getting Started
+## Getting Started
 
 ### Local Development
 
@@ -74,6 +79,6 @@ open public/index.html
 3. Add GitHub Secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`
 4. Push to `main` or `prod` to trigger deployment
 
-## 📝 License
+## License
 
-This is a personal project for learning purposes.
+Personal project for learning purposes.
