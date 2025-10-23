@@ -101,38 +101,29 @@ const melodies = {
         ],
     },
     ode: {
-        name: 'Ode to Joy',
-        tempo: 120,
+        name: 'Ode to Joy (with chords)',
+        tempo: 110,
         notes: [
-            // Main theme - first phrase
-            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
-            { note: 'F', duration: 1 }, { note: 'G', duration: 1 },
-            { note: 'G', duration: 1 }, { note: 'F', duration: 1 },
-            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
-            // Second phrase
-            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
-            { note: 'D', duration: 1 }, { note: 'E', duration: 1 },
-            { note: 'E', duration: 1.5 }, { note: 'D', duration: 0.5 },
-            { note: 'D', duration: 2 },
+            // Main theme - first phrase with C major chord
+            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['E', 'C', 'G'], duration: 1 },
+            { note: ['F', 'D', 'A'], duration: 1 }, { note: ['G', 'E', 'C5'], duration: 1 },
+            { note: ['G', 'E', 'C5'], duration: 1 }, { note: ['F', 'D', 'A'], duration: 1 },
+            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['D', 'B', 'G'], duration: 1 },
+            // Second phrase with C and G chords
+            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
+            { note: ['D', 'F', 'A'], duration: 1 }, { note: ['E', 'G', 'C5'], duration: 1 },
+            { note: ['E', 'G', 'C5'], duration: 1.5 }, { note: ['D', 'G', 'B'], duration: 0.5 },
+            { note: ['D', 'G', 'B'], duration: 2 },
             // Repeat first phrase
-            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
-            { note: 'F', duration: 1 }, { note: 'G', duration: 1 },
-            { note: 'G', duration: 1 }, { note: 'F', duration: 1 },
-            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
-            // Ending phrase
-            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
-            { note: 'D', duration: 1 }, { note: 'E', duration: 1 },
-            { note: 'D', duration: 1.5 }, { note: 'C', duration: 0.5 },
-            { note: 'C', duration: 2 },
-            // Middle section
-            { note: 'D', duration: 1 }, { note: 'D', duration: 1 },
-            { note: 'E', duration: 1 }, { note: 'C', duration: 1 },
-            { note: 'D', duration: 1 }, { note: 'E', duration: 0.5 }, { note: 'F', duration: 0.5 },
-            { note: 'E', duration: 1 }, { note: 'C', duration: 1 },
-            { note: 'D', duration: 1 }, { note: 'E', duration: 0.5 }, { note: 'F', duration: 0.5 },
-            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
-            { note: 'C', duration: 1 }, { note: 'D', duration: 1 },
-            { note: 'C', duration: 2 },
+            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['E', 'C', 'G'], duration: 1 },
+            { note: ['F', 'D', 'A'], duration: 1 }, { note: ['G', 'E', 'C5'], duration: 1 },
+            { note: ['G', 'E', 'C5'], duration: 1 }, { note: ['F', 'D', 'A'], duration: 1 },
+            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['D', 'B', 'G'], duration: 1 },
+            // Ending phrase - resolving to C major
+            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
+            { note: ['D', 'F', 'A'], duration: 1 }, { note: ['E', 'G', 'C5'], duration: 1 },
+            { note: ['D', 'G', 'B'], duration: 1.5 }, { note: ['C', 'E', 'G'], duration: 0.5 },
+            { note: ['C', 'E', 'G'], duration: 2 },
         ],
     },
 };
@@ -1163,24 +1154,28 @@ function playMelody(melodyKey) {
     });
 }
 
-function playMelodyNote(noteName) {
-    // Parse note name (e.g., 'C', 'C5', 'G')
-    let noteObj = null;
+function playMelodyNote(noteData) {
+    // Handle both single notes and chords
+    const noteNames = Array.isArray(noteData) ? noteData : [noteData];
 
-    // Check if note has octave specified (e.g., 'C5')
-    if (noteName.length > 1 && !isNaN(noteName[1])) {
-        const name = noteName[0];
-        const octave = parseInt(noteName[1]);
-        noteObj = notes.find(n => n.name === name && n.baseOctave === octave);
-    } else {
-        // No octave specified, use base octave 4
-        noteObj = notes.find(n => n.name === noteName && n.baseOctave === 4);
-    }
+    noteNames.forEach(noteName => {
+        let noteObj = null;
 
-    if (noteObj) {
-        playNote(noteObj);
-        visualizeMelodyNote(noteObj);
-    }
+        // Check if note has octave specified (e.g., 'C5')
+        if (noteName.length > 1 && !isNaN(noteName[1])) {
+            const name = noteName[0];
+            const octave = parseInt(noteName[1]);
+            noteObj = notes.find(n => n.name === name && n.baseOctave === octave);
+        } else {
+            // No octave specified, use base octave 4
+            noteObj = notes.find(n => n.name === noteName && n.baseOctave === 4);
+        }
+
+        if (noteObj) {
+            playNote(noteObj);
+            visualizeMelodyNote(noteObj);
+        }
+    });
 }
 
 function visualizeMelodyNote(note) {
