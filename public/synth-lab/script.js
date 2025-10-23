@@ -101,28 +101,32 @@ const melodies = {
         ],
     },
     ode: {
-        name: 'Ode to Joy (with chords)',
-        tempo: 110,
+        name: 'Aura Lee (with chords)',
+        tempo: 100,
         notes: [
-            // Main theme - first phrase with C major chord
-            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['E', 'C', 'G'], duration: 1 },
-            { note: ['F', 'D', 'A'], duration: 1 }, { note: ['G', 'E', 'C5'], duration: 1 },
-            { note: ['G', 'E', 'C5'], duration: 1 }, { note: ['F', 'D', 'A'], duration: 1 },
-            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['D', 'B', 'G'], duration: 1 },
-            // Second phrase with C and G chords
-            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
-            { note: ['D', 'F', 'A'], duration: 1 }, { note: ['E', 'G', 'C5'], duration: 1 },
-            { note: ['E', 'G', 'C5'], duration: 1.5 }, { note: ['D', 'G', 'B'], duration: 0.5 },
-            { note: ['D', 'G', 'B'], duration: 2 },
-            // Repeat first phrase
-            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['E', 'C', 'G'], duration: 1 },
-            { note: ['F', 'D', 'A'], duration: 1 }, { note: ['G', 'E', 'C5'], duration: 1 },
-            { note: ['G', 'E', 'C5'], duration: 1 }, { note: ['F', 'D', 'A'], duration: 1 },
-            { note: ['E', 'C', 'G'], duration: 1 }, { note: ['D', 'B', 'G'], duration: 1 },
-            // Ending phrase - resolving to C major
-            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
-            { note: ['D', 'F', 'A'], duration: 1 }, { note: ['E', 'G', 'C5'], duration: 1 },
-            { note: ['D', 'G', 'B'], duration: 1.5 }, { note: ['C', 'E', 'G'], duration: 0.5 },
+            // "As the blackbird in the spring"
+            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
+            // "'neath the willow tree"
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
+            { note: ['C', 'E', 'G'], duration: 2 },
+            // "sat and piped I heard him sing"
+            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['F', 'A', 'C5'], duration: 1 },
+            // "singing Aura Lee"
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'G', 'B'], duration: 1 },
+            { note: ['C', 'E', 'G'], duration: 2 },
+            // "Aura Lee, Aura Lee"
+            { note: ['E', 'G', 'C5'], duration: 1.5 }, { note: ['D', 'F#', 'A'], duration: 0.5 },
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['G', 'B', 'D5'], duration: 1 },
+            // "maid of golden hair"
+            { note: ['A', 'C5', 'E5'], duration: 1 }, { note: ['G', 'B', 'D5'], duration: 1 },
+            { note: ['F', 'A', 'C5'], duration: 2 },
+            // "sunshine came along with thee"
+            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['F', 'A', 'C5'], duration: 1 },
+            // "and swallows in the air"
+            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'G', 'B'], duration: 1 },
             { note: ['C', 'E', 'G'], duration: 2 },
         ],
     },
