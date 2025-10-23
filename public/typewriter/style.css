@@ -1,0 +1,66 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #2a2a2a;
+    color: #e8e8e8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow: hidden;
+    cursor: text;
+}
+
+#page {
+    width: 100vw;
+    height: 100vh;
+    padding: 3rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+}
+
+#page:focus {
+    outline: none;
+}
+
+.char {
+    position: relative;
+    display: inline-block;
+}
+
+.char .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.cursor-indicator {
+    position: relative;
+}
+
+.cursor-indicator::after {
+    content: '↑';
+    position: absolute;
+    bottom: -1.2em;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #e8e8e8;
+    opacity: 0.6;
+    font-size: 0.9em;
+    pointer-events: none;
+}
+
+.cursor-indicator.fade-out::after {
+    animation: fadeOut 0.3s ease-out forwards;
+    animation-delay: 1s;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
