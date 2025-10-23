@@ -290,12 +290,12 @@ h2 {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6), inset 0 -2px 4px rgba(255, 255, 255, 0.15);
 }
 
-/* Position black keys between white keys */
-.key-black:nth-of-type(2) { left: calc(1 * (100% / 13) - 20px); }  /* C# */
-.key-black:nth-of-type(4) { left: calc(2 * (100% / 13) - 20px); }  /* D# */
-.key-black:nth-of-type(7) { left: calc(4 * (100% / 13) - 20px); }  /* F# */
-.key-black:nth-of-type(9) { left: calc(5 * (100% / 13) - 20px); }  /* G# */
-.key-black:nth-of-type(11) { left: calc(6 * (100% / 13) - 20px); } /* A# */
+/* Position black keys between white keys - using data attributes for precise placement */
+.key-black[data-key="w"] { left: calc((100% / 8) * 0.66 - 20px); }  /* C# - between C and D */
+.key-black[data-key="e"] { left: calc((100% / 8) * 1.66 - 20px); }  /* D# - between D and E */
+.key-black[data-key="t"] { left: calc((100% / 8) * 3.66 - 20px); }  /* F# - between F and G */
+.key-black[data-key="y"] { left: calc((100% / 8) * 4.66 - 20px); }  /* G# - between G and A */
+.key-black[data-key="u"] { left: calc((100% / 8) * 5.66 - 20px); }  /* A# - between A and B */
 
 .key .label {
     display: block;
