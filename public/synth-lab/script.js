@@ -102,32 +102,31 @@ const melodies = {
     },
     ode: {
         name: 'Brahms Lullaby',
-        tempo: 90,
+        tempo: 80,
         notes: [
-            // "Lullaby and goodnight"
-            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'E', duration: 0.5 },
-            { note: ['A', 'F'], duration: 1 }, { note: 'G', duration: 1 },
-            // "with roses bedight"
-            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'E', duration: 0.5 },
-            { note: ['A', 'F'], duration: 1 }, { note: 'G', duration: 1 },
+            // "Lullaby and good night" (3/4 time)
+            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
+            // "with roses be-dight"
+            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
             // "with lilies o'er spread"
-            { note: ['A', 'F'], duration: 1 }, { note: 'A', duration: 0.5 }, { note: 'F', duration: 0.5 },
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'C5', duration: 1 },
             // "is baby's wee bed"
-            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'A', duration: 0.5 },
-            { note: ['G', 'E'], duration: 1 }, { note: 'C', duration: 1 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'G', duration: 1 },
+
             // "Lay thee down now and rest"
-            { note: ['D', 'B'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'B', duration: 0.5 },
-            { note: ['E', 'C5'], duration: 1 }, { note: 'D', duration: 1 },
+            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
             // "may thy slumber be blessed"
-            { note: ['D', 'B'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'B', duration: 0.5 },
-            { note: ['E', 'C5'], duration: 1 }, { note: 'D', duration: 1 },
+            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
             // "Lay thee down now and rest"
-            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'A', duration: 0.5 },
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'C5', duration: 1 },
             // "may thy slumber be blessed"
-            { note: ['G', 'E'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'F', duration: 0.5 },
-            { note: ['E', 'C'], duration: 2 }, { note: 'C', duration: 1 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: ['G', 'E'], duration: 1.5 },
+
+            // Second verse continues
+            { note: 'B', duration: 0.75 }, { note: ['C5', 'A'], duration: 0.75 }, { note: 'B', duration: 1.5 },
+            { note: 'A', duration: 0.75 }, { note: ['B', 'G'], duration: 0.75 }, { note: 'A', duration: 1.5 },
+            { note: 'G', duration: 0.75 }, { note: ['A', 'F'], duration: 0.75 }, { note: 'G', duration: 1.5 },
+            { note: ['E', 'C'], duration: 3 },
         ],
     },
 };
