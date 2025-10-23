@@ -244,6 +244,7 @@ page.addEventListener('keydown', (e) => {
         // that will be shown in the render function
         if (cursorPosition === content.length) {
             // At the end, add a temporary placeholder for the indicator
+            console.log('Adding temporary indicator at end, cursorPosition:', cursorPosition);
             content.push({
                 value: ' ',
                 overlays: [],
@@ -253,8 +254,10 @@ page.addEventListener('keydown', (e) => {
                 showIndicator: true,
                 isTemporary: true
             });
+            console.log('Content after adding temp:', content);
         } else if (content[cursorPosition]) {
             // Show indicator at current position
+            console.log('Setting indicator at existing position:', cursorPosition);
             content[cursorPosition].showIndicator = true;
         }
     }
@@ -277,13 +280,14 @@ function render() {
             const span = document.createElement('span');
             span.className = 'char';
 
-            // Hide temporary indicator characters
+            // For temporary indicator characters, use invisible text
             if (char.isTemporary) {
-                span.style.opacity = '0';
+                span.style.color = 'transparent';
                 span.style.pointerEvents = 'none';
+                span.textContent = char.value;
+            } else {
+                span.textContent = char.value;
             }
-
-            span.textContent = char.value;
 
             // Apply subtle random transformations
             if (char.rotation !== undefined) {
@@ -293,6 +297,7 @@ function render() {
 
             // Show cursor indicator if needed
             if (char.showIndicator) {
+                console.log('Rendering indicator for char:', char);
                 span.classList.add('cursor-indicator', 'fade-out');
 
                 // Set timeout to remove the indicator after animation completes
