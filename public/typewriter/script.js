@@ -191,6 +191,7 @@ page.addEventListener('keydown', (e) => {
                 targetChar.rotation = (Math.random() - 0.5) * 1.5;
                 targetChar.offsetY = (Math.random() - 0.5) * 1;
                 targetChar.letterSpacing = Math.random() * 0.3 - 0.15;
+                targetChar.opacity = 0.85 + Math.random() * 0.15; // Vary between 0.85 and 1.0
                 cursorPosition++;
             } else {
                 // Normal overlay behavior
@@ -223,13 +224,15 @@ page.addEventListener('keydown', (e) => {
             const rotation = (Math.random() - 0.5) * 1.5; // -0.75 to +0.75 degrees
             const offsetY = (Math.random() - 0.5) * 1; // -0.5 to +0.5 pixels
             const letterSpacing = Math.random() * 0.3 - 0.15; // -0.15 to +0.15 pixels
+            const opacity = 0.85 + Math.random() * 0.15; // Vary between 0.85 and 1.0
 
             content.push({
                 value: key,
                 overlays: [],
                 rotation,
                 offsetY,
-                letterSpacing
+                letterSpacing,
+                opacity
             });
             cursorPosition++;
 
@@ -328,6 +331,11 @@ function render() {
             if (char.rotation !== undefined) {
                 span.style.transform = `rotate(${char.rotation}deg) translateY(${char.offsetY}px)`;
                 span.style.letterSpacing = `${char.letterSpacing}px`;
+            }
+
+            // Apply subtle random opacity variation
+            if (char.opacity !== undefined) {
+                span.style.opacity = char.opacity;
             }
 
             // Show cursor indicator if needed
