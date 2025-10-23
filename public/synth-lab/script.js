@@ -22,10 +22,32 @@ const melodies = {
         name: 'Twinkle Twinkle Little Star',
         tempo: 120,
         notes: [
+            // "Twinkle twinkle little star"
             { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
             { note: 'G', duration: 1 }, { note: 'G', duration: 1 },
             { note: 'A', duration: 1 }, { note: 'A', duration: 1 },
             { note: 'G', duration: 2 },
+            // "How I wonder what you are"
+            { note: 'F', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'D', duration: 1 },
+            { note: 'C', duration: 2 },
+            // "Up above the world so high"
+            { note: 'G', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 2 },
+            // "Like a diamond in the sky"
+            { note: 'G', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 2 },
+            // "Twinkle twinkle little star"
+            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'A', duration: 1 }, { note: 'A', duration: 1 },
+            { note: 'G', duration: 2 },
+            // "How I wonder what you are"
             { note: 'F', duration: 1 }, { note: 'F', duration: 1 },
             { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
             { note: 'D', duration: 1 }, { note: 'D', duration: 1 },
@@ -36,16 +58,23 @@ const melodies = {
         name: 'Happy Birthday',
         tempo: 100,
         notes: [
+            // "Happy birthday to you"
             { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
             { note: 'D', duration: 1 }, { note: 'C', duration: 1 },
             { note: 'F', duration: 1 }, { note: 'E', duration: 2 },
+            // "Happy birthday to you"
             { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
             { note: 'D', duration: 1 }, { note: 'C', duration: 1 },
             { note: 'G', duration: 1 }, { note: 'F', duration: 2 },
+            // "Happy birthday dear [name]"
             { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
             { note: 'C5', duration: 1 }, { note: 'A', duration: 1 },
             { note: 'F', duration: 1 }, { note: 'E', duration: 1 },
-            { note: 'D', duration: 1 },
+            { note: 'D', duration: 2 },
+            // "Happy birthday to you"
+            { note: 'A#', duration: 0.75 }, { note: 'A#', duration: 0.25 },
+            { note: 'A', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'F', duration: 2 },
         ],
     },
     rowboat: {
