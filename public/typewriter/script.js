@@ -140,13 +140,65 @@ page.addEventListener('keydown', (e) => {
                 if (content[cursorPosition]) {
                     content[cursorPosition].showIndicator = true;
                 }
+            } else {
+                // We're at the start of the line - show indicator at first character
+                // Clear all previous indicators
+                content.forEach(char => {
+                    if (char.showIndicator) {
+                        char.showIndicator = false;
+                    }
+                });
+
+                // Clear any existing timeout
+                if (indicatorTimeout) {
+                    clearTimeout(indicatorTimeout);
+                    indicatorTimeout = null;
+                }
+
+                // If there's already a character at lineStart, show indicator on it
+                // Otherwise, create a temporary character to show the indicator
+                if (content[lineStart] && !content[lineStart].isTemporary) {
+                    content[lineStart].showIndicator = true;
+                } else if (content[lineStart] && content[lineStart].isTemporary) {
+                    // Already have a temporary character, just ensure it shows indicator
+                    content[lineStart].showIndicator = true;
+                } else {
+                    // No character at this position - add temporary indicator character
+                    content.splice(lineStart, 0, {
+                        value: ' ',
+                        overlays: [],
+                        rotation: 0,
+                        offsetY: 0,
+                        letterSpacing: 0,
+                        showIndicator: true,
+                        isTemporary: true
+                    });
+                }
+            }
+        } else {
+            // cursorPosition is 0 - we're at the very beginning
+            // Add a temporary character with indicator to show we can't go back
+            if (content.length === 0) {
+                // Empty page - add temporary indicator character
+                content.push({
+                    value: ' ',
+                    overlays: [],
+                    rotation: 0,
+                    offsetY: 0,
+                    letterSpacing: 0,
+                    showIndicator: true,
+                    isTemporary: true
+                });
+            } else if (content[0]) {
+                // Show indicator at first character
+                content[0].showIndicator = true;
             }
         }
     } else if (key.length === 1) {
         // Printable character
         playKeySound();
 
-        // Check if typing consecutive spaces
+        // Check if typing consecutive spaces or space at start of line
         const isSpace = key === ' ';
         const prevChar = cursorPosition > 0 ? content[cursorPosition - 1] : null;
         const currentChar = cursorPosition < content.length ? content[cursorPosition] : null;
@@ -163,10 +215,14 @@ page.addEventListener('keydown', (e) => {
             (currentChar.overlays && currentChar.overlays.length > 0 && currentChar.overlays[currentChar.overlays.length - 1] === ' ')
         );
 
-        const isConsecutiveSpace = isSpace && (prevIsSpace || currentIsSpace);
+        // Check if we're at the start of a line (previous character is newline or we're at position 0)
+        const isStartOfLine = cursorPosition === 0 || (prevChar && prevChar.value === '\n');
 
-        // Clear any cursor indicators when typing (unless consecutive spaces)
-        if (!isConsecutiveSpace) {
+        const isConsecutiveSpace = isSpace && (prevIsSpace || currentIsSpace);
+        const isSpaceAtLineStart = isSpace && isStartOfLine;
+
+        // Clear any cursor indicators when typing (unless consecutive spaces or space at line start)
+        if (!isConsecutiveSpace && !isSpaceAtLineStart) {
             content.forEach(char => {
                 if (char.showIndicator) {
                     char.showIndicator = false;
@@ -202,8 +258,8 @@ page.addEventListener('keydown', (e) => {
                 cursorPosition++;
             }
 
-            // Show indicator for consecutive spaces in overlay mode
-            if (isConsecutiveSpace) {
+            // Show indicator for consecutive spaces or space at line start in overlay mode
+            if (isConsecutiveSpace || isSpaceAtLineStart) {
                 // Clear all previous indicators
                 content.forEach(char => {
                     if (char.showIndicator) {
@@ -215,8 +271,22 @@ page.addEventListener('keydown', (e) => {
                     indicatorTimeout = null;
                 }
 
-                // Show indicator on the character we just overlaid
-                content[cursorPosition - 1].showIndicator = true;
+                // Show indicator at the next position (where next character will appear)
+                if (cursorPosition < content.length) {
+                    // There's already a character at the next position
+                    content[cursorPosition].showIndicator = true;
+                } else {
+                    // At the end - add temporary character for indicator
+                    content.push({
+                        value: ' ',
+                        overlays: [],
+                        rotation: 0,
+                        offsetY: 0,
+                        letterSpacing: 0,
+                        showIndicator: true,
+                        isTemporary: true
+                    });
+                }
             }
         } else {
             // We're at the end, add a new character
@@ -236,8 +306,8 @@ page.addEventListener('keydown', (e) => {
             });
             cursorPosition++;
 
-            // Show indicator for consecutive spaces
-            if (isConsecutiveSpace) {
+            // Show indicator for consecutive spaces or space at line start
+            if (isConsecutiveSpace || isSpaceAtLineStart) {
                 // Clear all previous indicators
                 content.forEach(char => {
                     if (char.showIndicator) {
@@ -249,8 +319,17 @@ page.addEventListener('keydown', (e) => {
                     indicatorTimeout = null;
                 }
 
-                // Show indicator on the space we just typed
-                content[cursorPosition - 1].showIndicator = true;
+                // Show indicator at the next position (where next character will appear)
+                // Add temporary character for indicator since we're at the end
+                content.push({
+                    value: ' ',
+                    overlays: [],
+                    rotation: 0,
+                    offsetY: 0,
+                    letterSpacing: 0,
+                    showIndicator: true,
+                    isTemporary: true
+                });
             }
         }
     } else if (key === 'Enter') {
@@ -342,7 +421,6 @@ function render() {
 
             // Show cursor indicator if needed
             if (char.showIndicator) {
-                console.log('Rendering indicator for char:', char);
                 span.classList.add('cursor-indicator', 'fade-out');
 
                 // Set timeout to remove the indicator after animation completes
