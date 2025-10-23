@@ -1,12 +1,17 @@
 const notes = [
-    { name: 'C', baseOctave: 4, frequency: 261.63, key: 'a' },
-    { name: 'D', baseOctave: 4, frequency: 293.66, key: 's' },
-    { name: 'E', baseOctave: 4, frequency: 329.63, key: 'd' },
-    { name: 'F', baseOctave: 4, frequency: 349.23, key: 'f' },
-    { name: 'G', baseOctave: 4, frequency: 392.00, key: 'g' },
-    { name: 'A', baseOctave: 4, frequency: 440.00, key: 'h' },
-    { name: 'B', baseOctave: 4, frequency: 493.88, key: 'j' },
-    { name: 'C', baseOctave: 5, frequency: 523.25, key: 'k' },
+    { name: 'C', baseOctave: 4, frequency: 261.63, key: 'a', isBlack: false },
+    { name: 'C#', baseOctave: 4, frequency: 277.18, key: 'w', isBlack: true },
+    { name: 'D', baseOctave: 4, frequency: 293.66, key: 's', isBlack: false },
+    { name: 'D#', baseOctave: 4, frequency: 311.13, key: 'e', isBlack: true },
+    { name: 'E', baseOctave: 4, frequency: 329.63, key: 'd', isBlack: false },
+    { name: 'F', baseOctave: 4, frequency: 349.23, key: 'f', isBlack: false },
+    { name: 'F#', baseOctave: 4, frequency: 369.99, key: 't', isBlack: true },
+    { name: 'G', baseOctave: 4, frequency: 392.00, key: 'g', isBlack: false },
+    { name: 'G#', baseOctave: 4, frequency: 415.30, key: 'y', isBlack: true },
+    { name: 'A', baseOctave: 4, frequency: 440.00, key: 'h', isBlack: false },
+    { name: 'A#', baseOctave: 4, frequency: 466.16, key: 'u', isBlack: true },
+    { name: 'B', baseOctave: 4, frequency: 493.88, key: 'j', isBlack: false },
+    { name: 'C', baseOctave: 5, frequency: 523.25, key: 'k', isBlack: false },
 ];
 
 const OCTAVE_RANGE = { min: -2, max: 2 };
@@ -298,7 +303,7 @@ function renderKeyboard() {
     keyboard.innerHTML = '';
     notes.forEach(note => {
         const button = document.createElement('button');
-        button.className = 'key';
+        button.className = note.isBlack ? 'key key-black' : 'key key-white';
         button.dataset.noteId = getNoteId(note);
         button.dataset.key = note.key;
         button.innerHTML = `<span class="label">${getNoteLabel(note)}</span><span class="binding">${note.key.toUpperCase()}</span>`;
