@@ -37,7 +37,21 @@
         </section>
 
         <section class="controls">
-            <h2>Parameters</h2>
+            <div class="controls-header">
+                <h2>Parameters</h2>
+                <div class="preset-selector">
+                    <label for="preset-select">Preset:</label>
+                    <select id="preset-select">
+                        <option value="default">Default</option>
+                        <option value="bell">Bell</option>
+                        <option value="kick">Kick Drum</option>
+                        <option value="snare">Snare Drum</option>
+                        <option value="bass">Bass</option>
+                        <option value="pluck">Pluck</option>
+                    </select>
+                    <button id="export-button" type="button">Export JSON</button>
+                </div>
+            </div>
             <div id="control-groups"></div>
         </section>
 

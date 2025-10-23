@@ -73,6 +73,7 @@ let currentMelody = null;
 let melodyTimeouts = [];
 
 const defaultState = {
+    // Tone Oscillator
     waveform: 'triangle',
     toneGain: 0.04,
     toneAttack: 0.01,
@@ -80,24 +81,201 @@ const defaultState = {
     toneSustain: 0.015,
     toneRelease: 0.2,
 
+    // Overtone
     overtoneGain: 0.02,
     overtoneRatio: 2.6,
     overtoneDecay: 0.09,
 
+    // Sub-bass Oscillator
+    subBassGain: 0,
+    subBassDecay: 0.15,
+
+    // Noise
     noiseAmount: 0.018,
     noiseHighpass: 2500,
     noiseQ: 1.6,
     noiseDecay: 0.045,
+
+    // Filter
+    filterEnabled: false,
+    filterType: 'lowpass',
+    filterCutoff: 2000,
+    filterResonance: 1,
+    filterEnvAmount: 0,
+    filterAttack: 0.01,
+    filterDecay: 0.1,
+    filterSustain: 0.5,
+    filterRelease: 0.2,
+
+    // Effects
+    distortionAmount: 0,
+    delayEnabled: false,
+    delayTime: 0.25,
+    delayFeedback: 0.3,
+    delayMix: 0.3,
+    reverbEnabled: false,
+    reverbMix: 0.3,
+
+    // LFO
+    lfoEnabled: false,
+    lfoRate: 5,
+    lfoAmount: 0,
+    lfoTarget: 'pitch',
+
     octaveOffset: 0,
+};
+
+// Preset definitions
+const presets = {
+    default: { ...defaultState, name: 'Default' },
+    bell: {
+        name: 'Bell',
+        waveform: 'sine',
+        toneGain: 0.06,
+        toneAttack: 0.001,
+        toneDecay: 0.3,
+        toneSustain: 0.01,
+        toneRelease: 0.5,
+        overtoneGain: 0.04,
+        overtoneRatio: 3.5,
+        overtoneDecay: 0.2,
+        noiseAmount: 0.005,
+        noiseHighpass: 4000,
+        noiseQ: 2,
+        noiseDecay: 0.02,
+        subBassGain: 0,
+        filterEnabled: true,
+        filterType: 'lowpass',
+        filterCutoff: 3000,
+        filterResonance: 2,
+        filterEnvAmount: 2000,
+        filterAttack: 0.001,
+        filterDecay: 0.3,
+        filterSustain: 0.2,
+        filterRelease: 0.5,
+        reverbEnabled: true,
+        reverbMix: 0.4,
+    },
+    kick: {
+        name: 'Kick Drum',
+        waveform: 'sine',
+        toneGain: 0.08,
+        toneAttack: 0.001,
+        toneDecay: 0.15,
+        toneSustain: 0,
+        toneRelease: 0.05,
+        overtoneGain: 0.03,
+        overtoneRatio: 1.5,
+        overtoneDecay: 0.05,
+        noiseAmount: 0.03,
+        noiseHighpass: 1000,
+        noiseQ: 0.8,
+        noiseDecay: 0.03,
+        subBassGain: 0.06,
+        subBassDecay: 0.2,
+        filterEnabled: true,
+        filterType: 'lowpass',
+        filterCutoff: 150,
+        filterResonance: 1,
+        filterEnvAmount: 100,
+        filterAttack: 0.001,
+        filterDecay: 0.1,
+        filterSustain: 0,
+        filterRelease: 0.05,
+        distortionAmount: 20,
+    },
+    snare: {
+        name: 'Snare Drum',
+        waveform: 'triangle',
+        toneGain: 0.03,
+        toneAttack: 0.001,
+        toneDecay: 0.08,
+        toneSustain: 0.01,
+        toneRelease: 0.1,
+        overtoneGain: 0.025,
+        overtoneRatio: 2.1,
+        overtoneDecay: 0.06,
+        noiseAmount: 0.04,
+        noiseHighpass: 2000,
+        noiseQ: 1.2,
+        noiseDecay: 0.1,
+        subBassGain: 0,
+        filterEnabled: true,
+        filterType: 'highpass',
+        filterCutoff: 200,
+        filterResonance: 0.7,
+        distortionAmount: 10,
+    },
+    bass: {
+        name: 'Bass',
+        waveform: 'sawtooth',
+        toneGain: 0.05,
+        toneAttack: 0.01,
+        toneDecay: 0.1,
+        toneSustain: 0.03,
+        toneRelease: 0.15,
+        overtoneGain: 0.015,
+        overtoneRatio: 2,
+        overtoneDecay: 0.08,
+        noiseAmount: 0.005,
+        noiseHighpass: 3000,
+        noiseQ: 2,
+        noiseDecay: 0.02,
+        subBassGain: 0.04,
+        subBassDecay: 0.15,
+        filterEnabled: true,
+        filterType: 'lowpass',
+        filterCutoff: 800,
+        filterResonance: 3,
+        filterEnvAmount: 400,
+        filterAttack: 0.01,
+        filterDecay: 0.15,
+        filterSustain: 0.3,
+        filterRelease: 0.2,
+        distortionAmount: 15,
+    },
+    pluck: {
+        name: 'Pluck',
+        waveform: 'sawtooth',
+        toneGain: 0.05,
+        toneAttack: 0.001,
+        toneDecay: 0.2,
+        toneSustain: 0,
+        toneRelease: 0.05,
+        overtoneGain: 0.03,
+        overtoneRatio: 2.5,
+        overtoneDecay: 0.15,
+        noiseAmount: 0.015,
+        noiseHighpass: 3500,
+        noiseQ: 1.8,
+        noiseDecay: 0.02,
+        subBassGain: 0,
+        filterEnabled: true,
+        filterType: 'lowpass',
+        filterCutoff: 1200,
+        filterResonance: 2,
+        filterEnvAmount: 2000,
+        filterAttack: 0.001,
+        filterDecay: 0.15,
+        filterSustain: 0,
+        filterRelease: 0.05,
+        delayEnabled: true,
+        delayTime: 0.15,
+        delayFeedback: 0.2,
+        delayMix: 0.2,
+    },
 };
 
 const state = { ...defaultState };
 
 let audioContext = null;
+let reverbNode = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     setupOctaveControls();
     setupSongButtons();
+    setupPresetSelector();
+    setupExportButton();
     renderKeyboard();
     renderControls();
     updateCodePreview();
@@ -194,6 +372,14 @@ function renderControls() {
             ],
         },
         {
+            title: 'Sub-Bass',
+            description: 'Low-frequency oscillator one octave below the fundamental.',
+            controls: [
+                { id: 'subBassGain', label: 'Gain', min: 0, max: 0.1, step: 0.001 },
+                { id: 'subBassDecay', label: 'Decay (s)', min: 0.05, max: 0.5, step: 0.01 },
+            ],
+        },
+        {
             title: 'Noise',
             description: 'High-frequency hiss to soften transitions.',
             controls: [
@@ -201,6 +387,56 @@ function renderControls() {
                 { id: 'noiseHighpass', label: 'High-pass (Hz)', min: 500, max: 6000, step: 10 },
                 { id: 'noiseQ', label: 'Resonance (Q)', min: 0.5, max: 10, step: 0.1 },
                 { id: 'noiseDecay', label: 'Decay (s)', min: 0.01, max: 0.25, step: 0.005 },
+            ],
+        },
+        {
+            title: 'Filter',
+            description: 'Tone shaping and envelope control.',
+            controls: [
+                { id: 'filterEnabled', label: 'Enable', type: 'checkbox' },
+                { id: 'filterType', label: 'Type', type: 'select', options: ['lowpass', 'highpass', 'bandpass'] },
+                { id: 'filterCutoff', label: 'Cutoff (Hz)', min: 50, max: 5000, step: 10 },
+                { id: 'filterResonance', label: 'Resonance (Q)', min: 0.1, max: 20, step: 0.1 },
+                { id: 'filterEnvAmount', label: 'Env Amount (Hz)', min: -3000, max: 3000, step: 10 },
+                { id: 'filterAttack', label: 'Attack (s)', min: 0.001, max: 0.5, step: 0.001 },
+                { id: 'filterDecay', label: 'Decay (s)', min: 0.01, max: 1, step: 0.01 },
+                { id: 'filterSustain', label: 'Sustain', min: 0, max: 1, step: 0.01 },
+                { id: 'filterRelease', label: 'Release (s)', min: 0.01, max: 1, step: 0.01 },
+            ],
+        },
+        {
+            title: 'Distortion',
+            description: 'Waveshaping for grit and character.',
+            controls: [
+                { id: 'distortionAmount', label: 'Amount', min: 0, max: 100, step: 1 },
+            ],
+        },
+        {
+            title: 'Delay',
+            description: 'Echo effect with feedback.',
+            controls: [
+                { id: 'delayEnabled', label: 'Enable', type: 'checkbox' },
+                { id: 'delayTime', label: 'Time (s)', min: 0.01, max: 1, step: 0.01 },
+                { id: 'delayFeedback', label: 'Feedback', min: 0, max: 0.9, step: 0.05 },
+                { id: 'delayMix', label: 'Mix', min: 0, max: 1, step: 0.05 },
+            ],
+        },
+        {
+            title: 'Reverb',
+            description: 'Spatial ambience and room simulation.',
+            controls: [
+                { id: 'reverbEnabled', label: 'Enable', type: 'checkbox' },
+                { id: 'reverbMix', label: 'Mix', min: 0, max: 1, step: 0.05 },
+            ],
+        },
+        {
+            title: 'LFO',
+            description: 'Low frequency modulation for movement.',
+            controls: [
+                { id: 'lfoEnabled', label: 'Enable', type: 'checkbox' },
+                { id: 'lfoRate', label: 'Rate (Hz)', min: 0.1, max: 20, step: 0.1 },
+                { id: 'lfoAmount', label: 'Amount', min: 0, max: 100, step: 1 },
+                { id: 'lfoTarget', label: 'Target', type: 'select', options: ['pitch', 'filter', 'gain'] },
             ],
         },
     ];
@@ -236,6 +472,11 @@ function renderControls() {
                     input.appendChild(optionEl);
                 });
                 input.value = state[control.id];
+            } else if (control.type === 'checkbox') {
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = state[control.id];
+                controlEl.classList.add('checkbox-control');
             } else {
                 input = document.createElement('input');
                 input.type = 'range';
@@ -247,7 +488,9 @@ function renderControls() {
 
             input.id = control.id;
             input.addEventListener('input', event => {
-                const value = control.type === 'select'
+                const value = control.type === 'checkbox'
+                    ? event.target.checked
+                    : control.type === 'select'
                     ? event.target.value
                     : Number(event.target.value);
                 state[control.id] = value;
@@ -271,15 +514,27 @@ function renderControls() {
 }
 
 function formatValue(id, value) {
+    if (typeof value === 'boolean') {
+        return value ? 'ON' : 'OFF';
+    }
+
     if (typeof value === 'string') {
         return value;
     }
 
-    if (id.includes('Frequency') || id.includes('Highpass') || id.includes('High-pass')) {
+    if (id.includes('Cutoff') || id.includes('Frequency') || id.includes('Highpass') || id.includes('High-pass') || id.includes('EnvAmount') || id.includes('Env Amount')) {
         return `${Math.round(value)} Hz`;
     }
 
     if (id.toLowerCase().includes('ratio')) {
+        return value.toFixed(2);
+    }
+
+    if (id.toLowerCase().includes('time') && id.toLowerCase().includes('delay')) {
+        return `${value.toFixed(3)} s`;
+    }
+
+    if (id.toLowerCase().includes('mix') || id.toLowerCase().includes('feedback') || id.toLowerCase().includes('sustain')) {
         return value.toFixed(2);
     }
 
@@ -291,8 +546,12 @@ function formatValue(id, value) {
         return `${value.toFixed(3)} s`;
     }
 
-    if (id.toLowerCase().includes('q')) {
+    if (id.toLowerCase().includes('resonance') || id.toLowerCase().includes('q')) {
         return value.toFixed(2);
+    }
+
+    if (id.toLowerCase().includes('rate')) {
+        return `${value.toFixed(1)} Hz`;
     }
 
     return value.toFixed(3);
@@ -310,13 +569,56 @@ function playNote(note) {
     const now = audioContext.currentTime;
     const frequency = getFrequency(note);
 
+    // Create master gain
     const master = audioContext.createGain();
     master.gain.setValueAtTime(1, now);
+
+    // Apply LFO if enabled
+    if (state.lfoEnabled && state.lfoAmount > 0) {
+        applyLFO(master, frequency, now);
+    }
+
+    // Create audio routing chain
+    let destination = master;
+
+    // Add filter if enabled
+    let filter = null;
+    if (state.filterEnabled) {
+        filter = createFilter(frequency, now);
+        destination = filter;
+    }
+
+    // Add distortion if enabled
+    if (state.distortionAmount > 0) {
+        const distortion = createDistortion();
+        if (filter) {
+            filter.connect(distortion);
+        } else {
+            destination.connect(distortion);
+        }
+        destination = distortion;
+    }
+
+    // Create effects chain
+    const effectsChain = createEffectsChain(now);
+
+    // Connect to effects or directly to master
+    if (effectsChain) {
+        destination.connect(effectsChain.input);
+        effectsChain.output.connect(master);
+    } else if (filter || state.distortionAmount > 0) {
+        destination.connect(master);
+    }
+
+    // Connect master to audio context destination
     master.connect(audioContext.destination);
 
-    createToneOscillator(frequency, master, now);
-    createOvertone(frequency, master, now);
-    createNoise(master, now);
+    // Generate sound sources
+    const sourceDestination = (filter || (state.distortionAmount > 0)) ? destination : master;
+    createToneOscillator(frequency, sourceDestination, now);
+    createOvertone(frequency, sourceDestination, now);
+    createSubBass(frequency, sourceDestination, now);
+    createNoise(sourceDestination, now);
 
     const duration = state.toneAttack + state.toneDecay + state.toneRelease + 0.1;
     setTimeout(() => releaseVisual(note), duration * 1000);
@@ -399,6 +701,159 @@ function createNoise(destination, now) {
     source.stop(now + duration);
 }
 
+function createSubBass(frequency, destination, now) {
+    if (state.subBassGain <= 0.0005) {
+        return;
+    }
+
+    const osc = audioContext.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(frequency / 2, now); // One octave down
+
+    const gain = audioContext.createGain();
+    gain.gain.setValueAtTime(state.subBassGain, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + state.subBassDecay);
+
+    osc.connect(gain);
+    gain.connect(destination);
+
+    osc.start(now);
+    osc.stop(now + state.subBassDecay + 0.05);
+}
+
+function createFilter(frequency, now) {
+    const filter = audioContext.createBiquadFilter();
+    filter.type = state.filterType;
+    filter.Q.setValueAtTime(state.filterResonance, now);
+
+    // Set initial cutoff
+    const baseCutoff = state.filterCutoff;
+    filter.frequency.setValueAtTime(baseCutoff, now);
+
+    // Apply envelope if amount > 0
+    if (Math.abs(state.filterEnvAmount) > 1) {
+        const targetCutoff = Math.max(50, Math.min(5000, baseCutoff + state.filterEnvAmount));
+        const sustainCutoff = baseCutoff + (state.filterEnvAmount * state.filterSustain);
+
+        filter.frequency.linearRampToValueAtTime(targetCutoff, now + state.filterAttack);
+        filter.frequency.linearRampToValueAtTime(sustainCutoff, now + state.filterAttack + state.filterDecay);
+        filter.frequency.linearRampToValueAtTime(baseCutoff, now + state.filterAttack + state.filterDecay + state.filterRelease);
+    }
+
+    return filter;
+}
+
+function createDistortion() {
+    const distortion = audioContext.createWaveShaper();
+    const amount = state.distortionAmount;
+    const samples = 256;
+    const curve = new Float32Array(samples);
+    const deg = Math.PI / 180;
+
+    for (let i = 0; i < samples; i++) {
+        const x = (i * 2) / samples - 1;
+        curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+    }
+
+    distortion.curve = curve;
+    distortion.oversample = '2x';
+    return distortion;
+}
+
+function createEffectsChain(now) {
+    const delayOn = state.delayEnabled && state.delayMix > 0;
+    const reverbOn = state.reverbEnabled && state.reverbMix > 0;
+
+    if (!delayOn && !reverbOn) {
+        return null;
+    }
+
+    const input = audioContext.createGain();
+    const output = audioContext.createGain();
+    const dryGain = audioContext.createGain();
+
+    let currentNode = input;
+
+    // Add delay
+    if (delayOn) {
+        const delay = audioContext.createDelay();
+        delay.delayTime.setValueAtTime(state.delayTime, now);
+
+        const delayGain = audioContext.createGain();
+        delayGain.gain.setValueAtTime(state.delayMix, now);
+
+        const feedback = audioContext.createGain();
+        feedback.gain.setValueAtTime(state.delayFeedback, now);
+
+        currentNode.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(delayGain);
+        delayGain.connect(output);
+    }
+
+    // Add reverb
+    if (reverbOn) {
+        ensureReverbNode();
+        const reverbGain = audioContext.createGain();
+        reverbGain.gain.setValueAtTime(state.reverbMix, now);
+
+        currentNode.connect(reverbNode);
+        reverbNode.connect(reverbGain);
+        reverbGain.connect(output);
+    }
+
+    // Dry signal
+    const dryAmount = 1 - Math.max(
+        delayOn ? state.delayMix : 0,
+        reverbOn ? state.reverbMix : 0
+    );
+    dryGain.gain.setValueAtTime(dryAmount, now);
+    currentNode.connect(dryGain);
+    dryGain.connect(output);
+
+    return { input, output };
+}
+
+function ensureReverbNode() {
+    if (reverbNode) return;
+
+    const sampleRate = audioContext.sampleRate;
+    const length = sampleRate * 2; // 2 second reverb
+    const impulse = audioContext.createBuffer(2, length, sampleRate);
+    const left = impulse.getChannelData(0);
+    const right = impulse.getChannelData(1);
+
+    for (let i = 0; i < length; i++) {
+        const decay = Math.exp(-i / (sampleRate * 0.5));
+        left[i] = (Math.random() * 2 - 1) * decay;
+        right[i] = (Math.random() * 2 - 1) * decay;
+    }
+
+    reverbNode = audioContext.createConvolver();
+    reverbNode.buffer = impulse;
+}
+
+function applyLFO(gainNode, frequency, now) {
+    const lfo = audioContext.createOscillator();
+    lfo.frequency.setValueAtTime(state.lfoRate, now);
+
+    const lfoGain = audioContext.createGain();
+    const amount = state.lfoAmount / 100;
+
+    if (state.lfoTarget === 'gain') {
+        lfoGain.gain.setValueAtTime(amount * 0.5, now);
+        lfo.connect(lfoGain);
+        lfoGain.connect(gainNode.gain);
+    } else if (state.lfoTarget === 'pitch') {
+        lfoGain.gain.setValueAtTime(frequency * amount * 0.1, now);
+        // Would need to connect to oscillator frequency - skipping for now
+    }
+
+    lfo.start(now);
+    lfo.stop(now + 2);
+}
+
 function buildToneDefinition() {
     return {
         id: 'custom-tone',
@@ -479,6 +934,66 @@ function updateOctaveDisplay() {
     if (up) {
         up.disabled = state.octaveOffset >= OCTAVE_RANGE.max;
     }
+}
+
+function setupPresetSelector() {
+    const select = document.getElementById('preset-select');
+    if (!select) return;
+
+    select.addEventListener('change', (e) => {
+        loadPreset(e.target.value);
+    });
+}
+
+function loadPreset(presetKey) {
+    const preset = presets[presetKey];
+    if (!preset) return;
+
+    // Update state with all preset values
+    Object.keys(preset).forEach(key => {
+        if (key !== 'name' && state.hasOwnProperty(key)) {
+            state[key] = preset[key];
+        }
+    });
+
+    // Update all UI controls
+    Object.keys(state).forEach(key => {
+        const input = document.getElementById(key);
+        if (input) {
+            if (input.type === 'checkbox') {
+                input.checked = state[key];
+            } else if (input.tagName === 'SELECT') {
+                input.value = state[key];
+            } else {
+                input.value = state[key];
+            }
+            updateValueDisplay(key, state[key]);
+        }
+    });
+
+    updateCodePreview();
+}
+
+function setupExportButton() {
+    const button = document.getElementById('export-button');
+    if (!button) return;
+
+    button.addEventListener('click', () => {
+        const definition = buildToneDefinition();
+        const json = JSON.stringify(definition, null, 2);
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(json).then(() => {
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Export JSON';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            // Fallback: show in alert
+            alert(json);
+        });
+    });
 }
 
 function getNoteId(note) {
