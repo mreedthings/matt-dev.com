@@ -100,35 +100,6 @@ const melodies = {
             { note: 'C', duration: 2 },
         ],
     },
-    ode: {
-        name: 'Brahms Lullaby',
-        tempo: 80,
-        notes: [
-            // "Lullaby and good night" (3/4 time)
-            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
-            // "with roses be-dight"
-            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
-            // "with lilies o'er spread"
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'C5', duration: 1 },
-            // "is baby's wee bed"
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'G', duration: 1 },
-
-            // "Lay thee down now and rest"
-            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
-            // "may thy slumber be blessed"
-            { note: ['G', 'E'], duration: 1 }, { note: 'E', duration: 1 }, { note: 'G', duration: 1 },
-            // "Lay thee down now and rest"
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: 'C5', duration: 1 },
-            // "may thy slumber be blessed"
-            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 }, { note: ['G', 'E'], duration: 1.5 },
-
-            // Second verse continues
-            { note: 'B', duration: 0.75 }, { note: ['C5', 'A'], duration: 0.75 }, { note: 'B', duration: 1.5 },
-            { note: 'A', duration: 0.75 }, { note: ['B', 'G'], duration: 0.75 }, { note: 'A', duration: 1.5 },
-            { note: 'G', duration: 0.75 }, { note: ['A', 'F'], duration: 0.75 }, { note: 'G', duration: 1.5 },
-            { note: ['E', 'C'], duration: 3 },
-        ],
-    },
 };
 
 // Melody playback state
@@ -1082,7 +1053,6 @@ function setupSongButtons() {
         { id: 'song-twinkle', melody: 'twinkle' },
         { id: 'song-birthday', melody: 'birthday' },
         { id: 'song-rowboat', melody: 'rowboat' },
-        { id: 'song-ode', melody: 'ode' },
     ];
 
     buttons.forEach(({ id, melody }) => {
