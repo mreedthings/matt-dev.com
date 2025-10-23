@@ -1,16 +1,17 @@
-# MyTuner
+# Guitar Tuner
 
-A simple, accessible guitar tuner web app that plays reference tones for each guitar string in standard tuning.
+An interactive, accessible guitar tuner web app with hand-drawn typewriter aesthetic that plays reference tones for each guitar string in standard tuning.
 
 ## Features
 
-- **Interactive UI** - Click or use keyboard (Enter/Space) to play tones for standard guitar tuning
+- **Interactive UI** - Click strings to play reference tones for standard guitar tuning
+- **Hand-Drawn Aesthetic** - Animated wobbly SVG boxes with 8fps frame animation
 - **Adjustable Duration** - Control how long each tone plays (1-10 seconds)
+- **Volume Control** - Adjustable volume slider (default 20%)
 - **Realistic Guitar Tone** - Uses sawtooth waveform with lowpass filter to simulate guitar timbre
 - **Accessible** - Full keyboard navigation support with ARIA labels for screen readers
-- **Visual Feedback** - Clear indication when a note is playing
-- **Safe Volume** - Pre-configured to 30% volume to prevent hearing discomfort
-- **Responsive Design** - Works on desktop and mobile devices
+- **Visual Feedback** - Animated boxes and musical note icon while playing
+- **Responsive Design** - Hand-drawn boxes redraw on window resize
 
 ## Installation & Setup
 
@@ -53,7 +54,13 @@ A simple, accessible guitar tuner web app that plays reference tones for each gu
 ### Audio Processing
 - **Waveform**: Sawtooth oscillator (richer harmonic content than sine wave)
 - **Filter**: Lowpass filter at 2000 Hz (removes harsh high frequencies)
-- **Volume**: Fixed at 30% to prevent hearing discomfort
+- **Volume**: Adjustable via slider (default 20%)
+
+### Visual Design
+- **Hand-drawn boxes**: Wobbly SVG paths with random variations
+- **8fps animation**: Pre-generated frames for amateur hand-drawn feel
+- **Responsive**: Boxes regenerate on window resize
+- **Typewriter font**: Special Elite monospace with character variations
 
 ## Browser Compatibility
 
@@ -65,17 +72,14 @@ Requires a modern browser with Web Audio API support:
 
 **Not supported**: Internet Explorer
 
-## Code Quality Improvements
+## Recent Updates
 
-Recent improvements include:
-- Volume control via GainNode to prevent loud playback
-- Memory leak prevention with proper node cleanup
-- Error handling for unsupported browsers
-- Full keyboard accessibility with ARIA labels
-- Visual feedback during playback
-- Input validation for duration selection
-- Comprehensive JSDoc comments
-- Mobile-responsive design
+- Hand-drawn SVG boxes with 8fps animation during playback
+- Responsive box regeneration on window resize
+- Character-level typewriter effects (rotation, offset, opacity)
+- Adjustable volume control (slider)
+- Hand-drawn scribble bullet points
+- Dark background with subtle gradients and noise texture
 
 ## Contribution
 
