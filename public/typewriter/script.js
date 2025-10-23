@@ -254,7 +254,7 @@ page.addEventListener('keydown', (e) => {
             }
         }
     } else if (key === 'Enter') {
-        // Insert newline at cursor position
+        // Carriage return - like a real typewriter, go to next line but leave existing text
         playEnterSound();
 
         // Clear all previous indicators
@@ -268,21 +268,25 @@ page.addEventListener('keydown', (e) => {
             indicatorTimeout = null;
         }
 
-        if (cursorPosition < content.length) {
-            content.splice(cursorPosition, 0, { value: '\n', overlays: [] });
-        } else {
-            content.push({ value: '\n', overlays: [] });
+        // Find the end of the current line
+        let lineEnd = cursorPosition;
+        while (lineEnd < content.length && content[lineEnd].value !== '\n') {
+            lineEnd++;
         }
-        cursorPosition++;
 
-        // Show indicator at the first position of the new line
-        // The cursor is now at the beginning of the new line
-        // We need to mark the next character position for the indicator
-        // Since we're at a new line start, we'll add a temporary marker
-        // that will be shown in the render function
+        // Always add newline at the end of the current line, not at cursor position
+        if (lineEnd < content.length && content[lineEnd].value === '\n') {
+            // Line already has a newline, position cursor after it
+            cursorPosition = lineEnd + 1;
+        } else {
+            // Add newline at end of current line
+            content.splice(lineEnd, 0, { value: '\n', overlays: [] });
+            cursorPosition = lineEnd + 1;
+        }
+
+        // Show indicator at the start of the new line
         if (cursorPosition === content.length) {
             // At the end, add a temporary placeholder for the indicator
-            console.log('Adding temporary indicator at end, cursorPosition:', cursorPosition);
             content.push({
                 value: ' ',
                 overlays: [],
@@ -292,10 +296,8 @@ page.addEventListener('keydown', (e) => {
                 showIndicator: true,
                 isTemporary: true
             });
-            console.log('Content after adding temp:', content);
         } else if (content[cursorPosition]) {
             // Show indicator at current position
-            console.log('Setting indicator at existing position:', cursorPosition);
             content[cursorPosition].showIndicator = true;
         }
     }
