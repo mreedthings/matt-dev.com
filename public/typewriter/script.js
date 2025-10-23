@@ -2,6 +2,8 @@ const page = document.getElementById('page');
 let content = [];
 let cursorPosition = 0; // Tracks where we are in the content array
 let indicatorTimeout = null; // Track the indicator removal timeout
+let indicatorShakeTimeoutId = null;
+const INDICATOR_SHAKE_DURATION = 1000; // ms
 
 // Audio context for sound generation
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -42,6 +44,9 @@ function playKeySound() {
     noise.start(now);
     noise.stop(now + 0.08);
 }
+
+// Generate spacebar sound (currently muted)
+function playSpaceSound() {}
 
 // Generate carriage return bell sound
 function playEnterSound() {
@@ -97,6 +102,113 @@ function playEnterSound() {
     });
 
     masterGain.connect(audioContext.destination);
+}
+
+// Gentle boundary knock when backspace cannot move further left
+function playBoundarySound() {
+    const now = audioContext.currentTime;
+    const boundaryFrequency = 73.416; // D2
+    const tone = {
+        waveform: 'triangle',
+        gain: 0.04,
+        envelope: { attack: 0.01, decay: 0.08, sustain: 0.015, release: 0.2 },
+    };
+    const overtone = { gain: 0.02, ratio: 2.6, decay: 0.09 };
+    const noise = { amount: 0.018, highpassFrequency: 2500, q: 1.6, decay: 0.045 };
+
+    const masterGain = audioContext.createGain();
+    masterGain.gain.setValueAtTime(1, now);
+    masterGain.connect(audioContext.destination);
+
+    // Primary tone
+    const toneOsc = audioContext.createOscillator();
+    toneOsc.type = tone.waveform;
+    toneOsc.frequency.setValueAtTime(boundaryFrequency, now);
+
+    const toneGain = audioContext.createGain();
+    toneGain.gain.setValueAtTime(0.0001, now);
+    toneGain.gain.linearRampToValueAtTime(tone.gain, now + tone.envelope.attack);
+    toneGain.gain.linearRampToValueAtTime(
+        Math.max(tone.envelope.sustain, 0.0001),
+        now + tone.envelope.attack + tone.envelope.decay
+    );
+    toneGain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + tone.envelope.attack + tone.envelope.decay + tone.envelope.release
+    );
+
+    toneOsc.connect(toneGain);
+    toneGain.connect(masterGain);
+
+    const toneStop =
+        now + tone.envelope.attack + tone.envelope.decay + tone.envelope.release + 0.05;
+    toneOsc.start(now);
+    toneOsc.stop(toneStop);
+
+    // Overtone for articulation
+    if (overtone.gain > 0.0005) {
+        const overtoneOsc = audioContext.createOscillator();
+        overtoneOsc.type = 'sine';
+        overtoneOsc.frequency.setValueAtTime(boundaryFrequency * overtone.ratio, now);
+
+        const overtoneGain = audioContext.createGain();
+        overtoneGain.gain.setValueAtTime(overtone.gain, now);
+        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + overtone.decay);
+
+        overtoneOsc.connect(overtoneGain);
+        overtoneGain.connect(masterGain);
+
+        overtoneOsc.start(now);
+        overtoneOsc.stop(now + overtone.decay + 0.05);
+    }
+
+    // Breath of filtered noise
+    if (noise.amount > 0.0005) {
+        const duration = noise.decay;
+        const sampleCount = Math.max(1, Math.floor(audioContext.sampleRate * duration));
+        const buffer = audioContext.createBuffer(1, sampleCount, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < sampleCount; i++) {
+            const envelope = Math.exp(-30 * (i / sampleCount));
+            data[i] = (Math.random() * 2 - 1) * envelope;
+        }
+
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(noise.highpassFrequency, now);
+        filter.Q.setValueAtTime(noise.q, now);
+
+        const noiseGain = audioContext.createGain();
+        noiseGain.gain.setValueAtTime(noise.amount, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        source.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(masterGain);
+
+        source.start(now);
+        source.stop(now + duration);
+    }
+}
+
+function scheduleIndicatorShake(targetChar) {
+    if (!targetChar) return;
+
+    const expiresAt = performance.now() + INDICATOR_SHAKE_DURATION;
+    targetChar.shakeUntil = expiresAt;
+
+    if (indicatorShakeTimeoutId) {
+        clearTimeout(indicatorShakeTimeoutId);
+    }
+
+    indicatorShakeTimeoutId = setTimeout(() => {
+        indicatorShakeTimeoutId = null;
+        render();
+    }, INDICATOR_SHAKE_DURATION);
 }
 
 // Focus on the page immediately
@@ -157,11 +269,14 @@ page.addEventListener('keydown', (e) => {
 
                 // If there's already a character at lineStart, show indicator on it
                 // Otherwise, create a temporary character to show the indicator
+                let indicatorChar = null;
                 if (content[lineStart] && !content[lineStart].isTemporary) {
                     content[lineStart].showIndicator = true;
+                    indicatorChar = content[lineStart];
                 } else if (content[lineStart] && content[lineStart].isTemporary) {
                     // Already have a temporary character, just ensure it shows indicator
                     content[lineStart].showIndicator = true;
+                    indicatorChar = content[lineStart];
                 } else {
                     // No character at this position - add temporary indicator character
                     content.splice(lineStart, 0, {
@@ -173,7 +288,11 @@ page.addEventListener('keydown', (e) => {
                         showIndicator: true,
                         isTemporary: true
                     });
+                    indicatorChar = content[lineStart] || content[0] || null;
                 }
+
+                scheduleIndicatorShake(indicatorChar || content[lineStart] || content[0] || null);
+                playBoundarySound();
             }
         } else {
             // cursorPosition is 0 - we're at the very beginning
@@ -189,17 +308,25 @@ page.addEventListener('keydown', (e) => {
                     showIndicator: true,
                     isTemporary: true
                 });
+                scheduleIndicatorShake(content[0]);
             } else if (content[0]) {
                 // Show indicator at first character
                 content[0].showIndicator = true;
+                scheduleIndicatorShake(content[0]);
             }
+
+            playBoundarySound();
         }
     } else if (key.length === 1) {
         // Printable character
-        playKeySound();
+        const isSpace = key === ' ';
+        if (isSpace) {
+            playSpaceSound();
+        } else {
+            playKeySound();
+        }
 
         // Check if typing consecutive spaces or space at start of line
-        const isSpace = key === ' ';
         const prevChar = cursorPosition > 0 ? content[cursorPosition - 1] : null;
         const currentChar = cursorPosition < content.length ? content[cursorPosition] : null;
 
@@ -391,6 +518,7 @@ page.addEventListener('blur', () => {
 
 function render() {
     page.innerHTML = '';
+    const now = performance.now();
 
     content.forEach((char, index) => {
         if (char.value === '\n') {
@@ -423,11 +551,20 @@ function render() {
             if (char.showIndicator) {
                 span.classList.add('cursor-indicator', 'fade-out');
 
+                if (char.shakeUntil) {
+                    if (char.shakeUntil > now) {
+                        span.classList.add('shake');
+                    } else {
+                        char.shakeUntil = null;
+                    }
+                }
+
                 // Set timeout to remove the indicator after animation completes
                 // Only set if we don't already have one (prevents multiple timeouts)
                 if (!indicatorTimeout) {
                     indicatorTimeout = setTimeout(() => {
                         char.showIndicator = false;
+                        char.shakeUntil = null;
 
                         // Remove temporary characters when indicator disappears
                         if (char.isTemporary) {

@@ -6,7 +6,13 @@
 
 // Constants for audio processing
 const FILTER_CUTOFF_FREQ = 2000; // Hz - removes harsh high frequencies
-const VOLUME_LEVEL = 0.3; // 30% volume to prevent hearing discomfort
+
+// Volume constants - using logarithmic scale to match human perception
+// Max gain of 0.15 (instead of 1.0) prevents uncomfortably loud sounds
+const MIN_GAIN = 0.001; // Minimum gain (nearly silent)
+const MAX_GAIN = 0.15;  // Maximum gain (comfortable max volume)
+const DEFAULT_VOLUME_PERCENT = 20; // Default slider position (20%)
+let currentVolumePercent = DEFAULT_VOLUME_PERCENT;
 
 // Standard guitar tuning frequencies (E A D G B E)
 const GUITAR_STRINGS = [
@@ -132,8 +138,9 @@ function playTone(frequency) {
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(FILTER_CUTOFF_FREQ, audioContext.currentTime);
 
-    // Configure gain - prevents loud/jarring playback
-    gainNode.gain.setValueAtTime(VOLUME_LEVEL, audioContext.currentTime);
+    // Configure gain - prevents loud/jarring playback (using logarithmic scale)
+    const gain = percentToGain(currentVolumePercent);
+    gainNode.gain.setValueAtTime(gain, audioContext.currentTime);
 
     // Connect the audio graph: oscillator -> filter -> gain -> speakers
     oscillator.connect(filter);
@@ -535,6 +542,40 @@ function drawHandDrawnBox(element) {
 }
 
 /**
+ * Convert volume percentage to gain using logarithmic scale
+ * Human hearing is logarithmic, so we use exponential mapping for linear-feeling control
+ * @param {number} percent - Volume percentage (0-100)
+ * @returns {number} Gain value (MIN_GAIN to MAX_GAIN)
+ */
+function percentToGain(percent) {
+    if (percent <= 0) return MIN_GAIN;
+    if (percent >= 100) return MAX_GAIN;
+
+    // Logarithmic scale: gain = MIN_GAIN * (MAX_GAIN/MIN_GAIN)^(percent/100)
+    const ratio = MAX_GAIN / MIN_GAIN;
+    return MIN_GAIN * Math.pow(ratio, percent / 100);
+}
+
+/**
+ * Update volume from slider
+ */
+function updateVolume() {
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+
+    if (volumeSlider && volumeValue) {
+        currentVolumePercent = parseInt(volumeSlider.value);
+        const gain = percentToGain(currentVolumePercent);
+        volumeValue.textContent = `${currentVolumePercent}%`;
+
+        // If a note is currently playing, update its gain in real-time
+        if (currentGainNode && audioContext) {
+            currentGainNode.gain.setValueAtTime(gain, audioContext.currentTime);
+        }
+    }
+}
+
+/**
  * Initialize the application
  */
 function init() {
@@ -551,6 +592,12 @@ function init() {
 
     // Draw hand-drawn boxes around string elements
     drawStringBoxes();
+
+    // Set up volume slider
+    const volumeSlider = document.getElementById('volumeSlider');
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', updateVolume);
+    }
 
     // Redraw boxes on window resize
     let boxResizeTimeout;

@@ -7,7 +7,7 @@
 body {
     background: #1a1a1a;
     color: #e8e8e8;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Special Elite', 'Courier New', Courier, monospace;
     font-size: 18px;
     line-height: 1.6;
     overflow: hidden;
@@ -84,13 +84,40 @@ body::after {
     pointer-events: none;
 }
 
+.cursor-indicator.shake::after {
+    animation: boundaryShake 1s steps(8, end);
+}
+
 .cursor-indicator.fade-out::after {
     animation: fadeOut 0.3s ease-out forwards;
     animation-delay: 1s;
 }
 
+.cursor-indicator.shake.fade-out::after {
+    animation: boundaryShake 1s steps(8, end), fadeOut 0.3s ease-out forwards 1s;
+}
+
 @keyframes fadeOut {
     to {
         opacity: 0;
+    }
+}
+
+@keyframes boundaryShake {
+    0%,
+    100% {
+        transform: translateX(-50%);
+    }
+    20% {
+        transform: translateX(calc(-50% - 2px));
+    }
+    40% {
+        transform: translateX(calc(-50% + 2px));
+    }
+    60% {
+        transform: translateX(calc(-50% - 1px));
+    }
+    80% {
+        transform: translateX(calc(-50% + 1px));
     }
 }
