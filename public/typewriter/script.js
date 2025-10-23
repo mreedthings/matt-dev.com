@@ -43,25 +43,60 @@ function playKeySound() {
     noise.stop(now + 0.08);
 }
 
-// Generate carriage return sound (bell-like)
+// Generate carriage return bell sound
 function playEnterSound() {
     const now = audioContext.currentTime;
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
 
-    // Create a two-tone mechanical sound
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(400, now);
-    oscillator.frequency.setValueAtTime(200, now + 0.05);
+    // A7 bell note
+    const fundamental = 3520.00;
+    const partials = [
+        { freq: fundamental, gain: 1.0 },      // Fundamental
+        { freq: fundamental * 2.4, gain: 0.6 }, // First overtone
+        { freq: fundamental * 3.2, gain: 0.4 }, // Second overtone
+        { freq: fundamental * 4.5, gain: 0.25 } // Third overtone
+    ];
 
-    gainNode.gain.setValueAtTime(0.1, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    const masterGain = audioContext.createGain();
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    // Create a subtle vibrato (LFO) for waviness
+    const vibrato = audioContext.createOscillator();
+    const vibratoGain = audioContext.createGain();
 
-    oscillator.start(now);
-    oscillator.stop(now + 0.15);
+    vibrato.type = 'sine';
+    vibrato.frequency.setValueAtTime(4, now); // 4Hz wobble
+    vibratoGain.gain.setValueAtTime(3, now); // Very subtle pitch modulation (±3Hz)
+
+    vibrato.connect(vibratoGain);
+    vibrato.start(now);
+    vibrato.stop(now + 1.2);
+
+    // Create oscillators for each partial
+    partials.forEach(partial => {
+        const osc = audioContext.createOscillator();
+        const partialGain = audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(partial.freq, now);
+
+        // Connect vibrato to frequency for waviness
+        vibratoGain.connect(osc.frequency);
+
+        // Each partial has its own decay rate - quieter volume
+        const initialGain = 0.025 * partial.gain; // Reduced from 0.04 to 0.025
+        partialGain.gain.setValueAtTime(initialGain, now);
+        // Quick initial drop, then very gradual tail that fades imperceptibly
+        partialGain.gain.exponentialRampToValueAtTime(0.006, now + 0.08); // Fast drop to 25% volume
+        partialGain.gain.exponentialRampToValueAtTime(0.003, now + 0.5); // Gradual fade
+        partialGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2); // Very slow final fade to silence
+
+        osc.connect(partialGain);
+        partialGain.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + 1.2);
+    });
+
+    masterGain.connect(audioContext.destination);
 }
 
 // Focus on the page immediately
