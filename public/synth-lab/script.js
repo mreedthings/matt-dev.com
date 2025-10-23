@@ -101,33 +101,33 @@ const melodies = {
         ],
     },
     ode: {
-        name: 'Aura Lee (with chords)',
-        tempo: 100,
+        name: 'Brahms Lullaby',
+        tempo: 90,
         notes: [
-            // "As the blackbird in the spring"
-            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['C', 'E', 'G'], duration: 1 },
-            // "'neath the willow tree"
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
-            { note: ['C', 'E', 'G'], duration: 2 },
-            // "sat and piped I heard him sing"
-            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['F', 'A', 'C5'], duration: 1 },
-            // "singing Aura Lee"
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'G', 'B'], duration: 1 },
-            { note: ['C', 'E', 'G'], duration: 2 },
-            // "Aura Lee, Aura Lee"
-            { note: ['E', 'G', 'C5'], duration: 1.5 }, { note: ['D', 'F#', 'A'], duration: 0.5 },
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['G', 'B', 'D5'], duration: 1 },
-            // "maid of golden hair"
-            { note: ['A', 'C5', 'E5'], duration: 1 }, { note: ['G', 'B', 'D5'], duration: 1 },
-            { note: ['F', 'A', 'C5'], duration: 2 },
-            // "sunshine came along with thee"
-            { note: ['C', 'E', 'G'], duration: 1 }, { note: ['D', 'F', 'A'], duration: 1 },
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['F', 'A', 'C5'], duration: 1 },
-            // "and swallows in the air"
-            { note: ['E', 'G', 'C5'], duration: 1 }, { note: ['D', 'G', 'B'], duration: 1 },
-            { note: ['C', 'E', 'G'], duration: 2 },
+            // "Lullaby and goodnight"
+            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'E', duration: 0.5 },
+            { note: ['A', 'F'], duration: 1 }, { note: 'G', duration: 1 },
+            // "with roses bedight"
+            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'E', duration: 0.5 },
+            { note: ['A', 'F'], duration: 1 }, { note: 'G', duration: 1 },
+            // "with lilies o'er spread"
+            { note: ['A', 'F'], duration: 1 }, { note: 'A', duration: 0.5 }, { note: 'F', duration: 0.5 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 },
+            // "is baby's wee bed"
+            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'A', duration: 0.5 },
+            { note: ['G', 'E'], duration: 1 }, { note: 'C', duration: 1 },
+            // "Lay thee down now and rest"
+            { note: ['D', 'B'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'B', duration: 0.5 },
+            { note: ['E', 'C5'], duration: 1 }, { note: 'D', duration: 1 },
+            // "may thy slumber be blessed"
+            { note: ['D', 'B'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'B', duration: 0.5 },
+            { note: ['E', 'C5'], duration: 1 }, { note: 'D', duration: 1 },
+            // "Lay thee down now and rest"
+            { note: ['G', 'E'], duration: 1 }, { note: 'G', duration: 0.5 }, { note: 'A', duration: 0.5 },
+            { note: ['C5', 'A'], duration: 1 }, { note: 'A', duration: 1 },
+            // "may thy slumber be blessed"
+            { note: ['G', 'E'], duration: 1 }, { note: 'D', duration: 0.5 }, { note: 'F', duration: 0.5 },
+            { note: ['E', 'C'], duration: 2 }, { note: 'C', duration: 1 },
         ],
     },
 };
