@@ -9,7 +9,9 @@ Personal website and DevOps learning platform. Portfolio of web projects with au
 
 ## Projects
 
-- **[Guitar Tuner](/public/tuner)** - Interactive web-based guitar tuner ([live demo](https://matt-dev.com/tuner))
+- **[Guitar Tuner](/public/tuner)** - Interactive web-based guitar tuner with keyboard controls ([live demo](https://matt-dev.com/tuner))
+- **[Typewriter](/public/typewriter)** - Interactive typewriter simulator with realistic sound and behavior ([live demo](https://matt-dev.com/typewriter))
+- **[Synth Lab](/public/synth-lab)** - Design and export custom percussive tones with Web Audio API ([live demo](https://matt-dev.com/synth-lab))
 
 ## Architecture
 
@@ -28,9 +30,12 @@ Automated CI/CD via GitHub Actions:
 ```
 matt-dev.com/
 ├── public/              # Website root
-│   ├── index.html       # Homepage
+│   ├── index.html       # Homepage with hand-drawn typewriter aesthetic
 │   ├── style.css
-│   └── tuner/           # Guitar tuner web app
+│   ├── script.js
+│   ├── tuner/           # Guitar tuner web app
+│   ├── typewriter/      # Interactive typewriter simulator
+│   └── synth-lab/       # Percussive tone synthesizer
 ├── .github/workflows/   # CI/CD automation
 ├── docs/deployment/     # Infrastructure documentation
 ├── scripts/             # Deployment scripts
@@ -40,6 +45,8 @@ matt-dev.com/
 ## Tech Stack
 
 - Static HTML/CSS/JavaScript
+- Web Audio API (for interactive audio projects)
+- Hand-drawn SVG animations
 - nginx web server
 - GitHub Actions for CI/CD
 - DigitalOcean VPS hosting
