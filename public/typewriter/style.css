@@ -1,0 +1,39 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #2a2a2a;
+    color: #e8e8e8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow: hidden;
+    cursor: text;
+}
+
+#page {
+    width: 100vw;
+    height: 100vh;
+    padding: 3rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+}
+
+#page:focus {
+    outline: none;
+}
+
+.char {
+    position: relative;
+    display: inline-block;
+}
+
+.char .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
