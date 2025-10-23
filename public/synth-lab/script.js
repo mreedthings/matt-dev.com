@@ -100,6 +100,41 @@ const melodies = {
             { note: 'C', duration: 2 },
         ],
     },
+    ode: {
+        name: 'Ode to Joy',
+        tempo: 120,
+        notes: [
+            // Main theme - first phrase
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
+            // Second phrase
+            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'E', duration: 1.5 }, { note: 'D', duration: 0.5 },
+            { note: 'D', duration: 2 },
+            // Repeat first phrase
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
+            // Ending phrase
+            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 1.5 }, { note: 'C', duration: 0.5 },
+            { note: 'C', duration: 2 },
+            // Middle section
+            { note: 'D', duration: 1 }, { note: 'D', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'E', duration: 0.5 }, { note: 'F', duration: 0.5 },
+            { note: 'E', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'E', duration: 0.5 }, { note: 'F', duration: 0.5 },
+            { note: 'E', duration: 1 }, { note: 'D', duration: 1 },
+            { note: 'C', duration: 1 }, { note: 'D', duration: 1 },
+            { note: 'C', duration: 2 },
+        ],
+    },
 };
 
 // Melody playback state
@@ -1053,6 +1088,7 @@ function setupSongButtons() {
         { id: 'song-twinkle', melody: 'twinkle' },
         { id: 'song-birthday', melody: 'birthday' },
         { id: 'song-rowboat', melody: 'rowboat' },
+        { id: 'song-ode', melody: 'ode' },
     ];
 
     buttons.forEach(({ id, melody }) => {
