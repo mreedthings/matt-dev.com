@@ -163,6 +163,7 @@ function scheduleNoteStop(element, duration) {
 
         if (currentlyPlayingElement === element) {
             element.classList.remove('playing');
+            stopBoxAnimation(element);
             currentlyPlayingElement = null;
             showInfo('Click or press Enter on a string to play its note');
         }
@@ -193,10 +194,12 @@ function handleStringActivation(guitarString, element) {
         // Remove visual feedback from previously playing element
         if (currentlyPlayingElement && currentlyPlayingElement !== element) {
             currentlyPlayingElement.classList.remove('playing');
+            stopBoxAnimation(currentlyPlayingElement);
         }
 
         // Visual feedback
         element.classList.add('playing');
+        startBoxAnimation(element);
         currentlyPlayingElement = element;
 
         // Show info message
@@ -288,6 +291,250 @@ function handleGlobalKeyboard(event) {
 }
 
 /**
+ * Apply typewriter character variations to text content
+ */
+function applyTypewriterEffect() {
+    // Get all text elements to style
+    const elementsToStyle = document.querySelectorAll('h1, h2, label, .string');
+
+    elementsToStyle.forEach(element => {
+        // Skip if element is empty or only whitespace
+        if (!element.textContent.trim()) return;
+
+        // Get the text content
+        const text = element.textContent;
+
+        // Clear the element
+        element.textContent = '';
+
+        // Wrap each character in a span with random variations
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+
+            // For whitespace, just add as text node
+            if (char === ' ' || char === '\n' || char === '\t') {
+                element.appendChild(document.createTextNode(char));
+                continue;
+            }
+
+            // Create span for character
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = char;
+
+            // Add subtle random variations for typewriter effect
+            const rotation = (Math.random() - 0.5) * 1.5; // -0.75 to +0.75 degrees
+            const offsetY = (Math.random() - 0.5) * 1;
+            const letterSpacing = Math.random() * 0.3 - 0.15;
+            const opacity = 0.85 + Math.random() * 0.15; // Vary between 0.85 and 1.0
+
+            // Apply transformations
+            span.style.transform = `rotate(${rotation}deg) translateY(${offsetY}px)`;
+            span.style.letterSpacing = `${letterSpacing}px`;
+            span.style.opacity = opacity;
+
+            element.appendChild(span);
+        }
+    });
+}
+
+/**
+ * Draw hand-drawn boxes around string elements
+ */
+function drawStringBoxes() {
+    const stringElements = document.querySelectorAll('.string');
+
+    stringElements.forEach(element => {
+        drawHandDrawnBox(element);
+    });
+}
+
+/**
+ * Start animating the box at 8fps
+ */
+function startBoxAnimation(element) {
+    // Stop any existing animation
+    stopBoxAnimation(element);
+
+    const svg = element.querySelector('.static-box');
+    if (!svg) return;
+
+    const path1 = svg.querySelector('path:nth-child(1)');
+    const path2 = svg.querySelector('path:nth-child(2)');
+    if (!path1 || !path2) return;
+
+    const frames = JSON.parse(element.dataset.boxFrames || '[]');
+    if (frames.length === 0) return;
+
+    // Start animation at 8fps (125ms per frame)
+    const intervalId = setInterval(() => {
+        const currentFrame = parseInt(element.dataset.currentBoxFrame);
+        const nextFrame = (currentFrame + 1) % frames.length;
+        element.dataset.currentBoxFrame = nextFrame.toString();
+
+        const { box1, box2 } = frames[nextFrame];
+        path1.setAttribute('d', box1);
+        path2.setAttribute('d', box2);
+    }, 125); // 8fps = 1000ms / 8 = 125ms
+
+    element.dataset.boxAnimationInterval = intervalId;
+}
+
+/**
+ * Stop animating the box and reset to first frame
+ */
+function stopBoxAnimation(element) {
+    const intervalId = element.dataset.boxAnimationInterval;
+    if (intervalId) {
+        clearInterval(parseInt(intervalId));
+        element.dataset.boxAnimationInterval = null;
+    }
+
+    // Reset to first frame
+    const svg = element.querySelector('.static-box');
+    if (!svg) return;
+
+    const path1 = svg.querySelector('path:nth-child(1)');
+    const path2 = svg.querySelector('path:nth-child(2)');
+    if (!path1 || !path2) return;
+
+    const frames = JSON.parse(element.dataset.boxFrames || '[]');
+    if (frames.length > 0) {
+        element.dataset.currentBoxFrame = '0';
+        const { box1, box2 } = frames[0];
+        path1.setAttribute('d', box1);
+        path2.setAttribute('d', box2);
+    }
+}
+
+/**
+ * Generate a wobbly hand-drawn line
+ */
+function generateWobblyLine(x1, y1, x2, y2, segments = 20) {
+    let path = `M ${x1},${y1}`;
+    const dx = (x2 - x1) / segments;
+    const dy = (y2 - y1) / segments;
+
+    for (let i = 1; i <= segments; i++) {
+        const x = x1 + dx * i + (Math.random() - 0.5) * 2;
+        const y = y1 + dy * i + (Math.random() - 0.5) * 2;
+        path += ` L ${x},${y}`;
+    }
+    return path;
+}
+
+/**
+ * Generate box path data
+ */
+function generateBoxPaths(width, height, marginTop, marginBottom, marginLeft, marginRight) {
+    const box1 =
+        generateWobblyLine(marginLeft, marginTop, width - marginRight, marginTop) + ' ' +
+        generateWobblyLine(width - marginRight, marginTop, width - marginRight, height - marginBottom) + ' ' +
+        generateWobblyLine(width - marginRight, height - marginBottom, marginLeft, height - marginBottom) + ' ' +
+        generateWobblyLine(marginLeft, height - marginBottom, marginLeft, marginTop);
+
+    const offset = 3;
+    const box2 =
+        generateWobblyLine(marginLeft + offset, marginTop + offset, width - marginRight - offset, marginTop + offset) + ' ' +
+        generateWobblyLine(width - marginRight - offset, marginTop + offset, width - marginRight - offset, height - marginBottom - offset) + ' ' +
+        generateWobblyLine(width - marginRight - offset, height - marginBottom - offset, marginLeft + offset, height - marginBottom - offset) + ' ' +
+        generateWobblyLine(marginLeft + offset, height - marginBottom - offset, marginLeft + offset, marginTop + offset);
+
+    return { box1, box2 };
+}
+
+/**
+ * Redraw box for an element (called on init and resize)
+ */
+function redrawBox(element, forceRedraw = false) {
+    const width = element.offsetWidth;
+    const height = element.offsetHeight;
+
+    // Skip if dimensions haven't changed (prevents flicker)
+    const lastWidth = parseInt(element.dataset.lastBoxWidth || '0');
+    const lastHeight = parseInt(element.dataset.lastBoxHeight || '0');
+
+    if (!forceRedraw && width === lastWidth && height === lastHeight) {
+        return;
+    }
+
+    element.dataset.lastBoxWidth = width.toString();
+    element.dataset.lastBoxHeight = height.toString();
+
+    const marginTop = 5;
+    const marginBottom = 5;
+    const marginLeft = 5;
+    const marginRight = 5;
+
+    let svg = element.querySelector('.static-box');
+    let path1, path2;
+
+    // Create SVG on first run
+    if (!svg) {
+        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.pointerEvents = 'none';
+        svg.classList.add('static-box');
+
+        // First box (main outline)
+        path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path1.setAttribute('fill', 'none');
+        path1.setAttribute('stroke', '#e8e8e8');
+        path1.setAttribute('stroke-width', '1.5');
+        path1.setAttribute('opacity', '0.8');
+
+        // Second box (traced outline with offset)
+        path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path2.setAttribute('fill', 'none');
+        path2.setAttribute('stroke', '#e8e8e8');
+        path2.setAttribute('stroke-width', '1.2');
+        path2.setAttribute('opacity', '0.6');
+
+        svg.appendChild(path1);
+        svg.appendChild(path2);
+        element.appendChild(svg);
+        svg.classList.add('ready');
+    } else {
+        path1 = svg.querySelector('path:nth-child(1)');
+        path2 = svg.querySelector('path:nth-child(2)');
+    }
+
+    // Update SVG dimensions
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
+
+    // Generate and update box paths
+    const { box1, box2 } = generateBoxPaths(width, height, marginTop, marginBottom, marginLeft, marginRight);
+    path1.setAttribute('d', box1);
+    path2.setAttribute('d', box2);
+
+    // Generate animation frames for playing state (6 frames for 8fps animation)
+    const frames = [];
+    for (let i = 0; i < 6; i++) {
+        const framePaths = generateBoxPaths(width, height, marginTop, marginBottom, marginLeft, marginRight);
+        frames.push(framePaths);
+    }
+
+    // Store frames and animation state on element
+    element.dataset.boxFrames = JSON.stringify(frames);
+
+    // Only reset animation state if this is initial draw
+    if (!element.dataset.currentBoxFrame) {
+        element.dataset.currentBoxFrame = '0';
+        element.dataset.boxAnimationInterval = null;
+    }
+}
+
+/**
+ * Draw hand-drawn box around an element
+ */
+function drawHandDrawnBox(element) {
+    redrawBox(element, true);
+}
+
+/**
  * Initialize the application
  */
 function init() {
@@ -297,6 +544,24 @@ function init() {
     GUITAR_STRINGS.forEach(guitarString => {
         const stringElement = createStringElement(guitarString);
         container.appendChild(stringElement);
+    });
+
+    // Apply typewriter effect to all text
+    applyTypewriterEffect();
+
+    // Draw hand-drawn boxes around string elements
+    drawStringBoxes();
+
+    // Redraw boxes on window resize
+    let boxResizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(boxResizeTimeout);
+        boxResizeTimeout = setTimeout(() => {
+            const stringElements = document.querySelectorAll('.string');
+            stringElements.forEach(element => {
+                redrawBox(element);
+            });
+        }, 50);
     });
 
     // Add global keyboard listener for note shortcuts
