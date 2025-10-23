@@ -291,12 +291,12 @@ h2 {
 }
 
 /* Position black keys between white keys */
-/* White keys are at positions: 0(C), 1(D), 2(E), 3(F), 4(G), 5(A), 6(B), 7(C) */
-.key-black[data-key="w"] { left: calc((100% / 8) * 0.7 - 20px); }   /* C# - between C and D (pos 0-1) */
-.key-black[data-key="e"] { left: calc((100% / 8) * 1.7 - 20px); }   /* D# - between D and E (pos 1-2) */
-.key-black[data-key="t"] { left: calc((100% / 8) * 3.7 - 20px); }   /* F# - between F and G (pos 3-4) */
-.key-black[data-key="y"] { left: calc((100% / 8) * 4.7 - 20px); }   /* G# - between G and A (pos 4-5) */
-.key-black[data-key="u"] { left: calc((100% / 8) * 5.7 - 20px); }   /* A# - between A and B (pos 5-6) */
+/* Each white key takes up 1/8 of the width. Black keys centered between them. */
+.key-black[data-key="w"] { left: calc((100% / 8) * 1 - 20px); }   /* C# - between C(0) and D(1) */
+.key-black[data-key="e"] { left: calc((100% / 8) * 2 - 20px); }   /* D# - between D(1) and E(2) */
+.key-black[data-key="t"] { left: calc((100% / 8) * 4 - 20px); }   /* F# - between F(3) and G(4) */
+.key-black[data-key="y"] { left: calc((100% / 8) * 5 - 20px); }   /* G# - between G(4) and A(5) */
+.key-black[data-key="u"] { left: calc((100% / 8) * 6 - 20px); }   /* A# - between A(5) and B(6) */
 
 .key .label {
     display: block;
