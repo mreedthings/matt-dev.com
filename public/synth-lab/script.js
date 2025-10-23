@@ -11,6 +11,67 @@ const notes = [
 
 const OCTAVE_RANGE = { min: -2, max: 2 };
 
+// Melody definitions (note names with durations in beats, tempo in BPM)
+const melodies = {
+    twinkle: {
+        name: 'Twinkle Twinkle Little Star',
+        tempo: 120,
+        notes: [
+            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'G', duration: 1 },
+            { note: 'A', duration: 1 }, { note: 'A', duration: 1 },
+            { note: 'G', duration: 2 },
+            { note: 'F', duration: 1 }, { note: 'F', duration: 1 },
+            { note: 'E', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 1 }, { note: 'D', duration: 1 },
+            { note: 'C', duration: 2 },
+        ],
+    },
+    birthday: {
+        name: 'Happy Birthday',
+        tempo: 100,
+        notes: [
+            { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
+            { note: 'D', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'E', duration: 2 },
+            { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
+            { note: 'D', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'G', duration: 1 }, { note: 'F', duration: 2 },
+            { note: 'C', duration: 0.75 }, { note: 'C', duration: 0.25 },
+            { note: 'C5', duration: 1 }, { note: 'A', duration: 1 },
+            { note: 'F', duration: 1 }, { note: 'E', duration: 1 },
+            { note: 'D', duration: 1 },
+        ],
+    },
+    rowboat: {
+        name: 'Row Row Row Your Boat',
+        tempo: 120,
+        notes: [
+            // "Row, row, row your boat"
+            { note: 'C', duration: 1 }, { note: 'C', duration: 1 },
+            { note: 'C', duration: 0.75 }, { note: 'D', duration: 0.25 },
+            { note: 'E', duration: 1 },
+            // "Gently down the stream"
+            { note: 'E', duration: 0.75 }, { note: 'D', duration: 0.25 },
+            { note: 'E', duration: 0.75 }, { note: 'F', duration: 0.25 },
+            { note: 'G', duration: 2 },
+            // "Merrily merrily merrily merrily"
+            { note: 'C5', duration: 0.33 }, { note: 'C5', duration: 0.33 }, { note: 'C5', duration: 0.33 },
+            { note: 'G', duration: 0.33 }, { note: 'G', duration: 0.33 }, { note: 'G', duration: 0.33 },
+            { note: 'E', duration: 0.33 }, { note: 'E', duration: 0.33 }, { note: 'E', duration: 0.33 },
+            { note: 'C', duration: 0.33 }, { note: 'C', duration: 0.33 }, { note: 'C', duration: 0.33 },
+            // "Life is but a dream"
+            { note: 'G', duration: 0.75 }, { note: 'F', duration: 0.25 },
+            { note: 'E', duration: 0.75 }, { note: 'D', duration: 0.25 },
+            { note: 'C', duration: 2 },
+        ],
+    },
+};
+
+// Melody playback state
+let currentMelody = null;
+let melodyTimeouts = [];
+
 const defaultState = {
     waveform: 'triangle',
     toneGain: 0.04,
@@ -36,6 +97,7 @@ let audioContext = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     setupOctaveControls();
+    setupSongButtons();
     renderKeyboard();
     renderControls();
     updateCodePreview();
@@ -433,4 +495,116 @@ function getFrequency(note) {
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
+}
+
+// === Melody Playback System ===
+
+function setupSongButtons() {
+    const buttons = [
+        { id: 'song-twinkle', melody: 'twinkle' },
+        { id: 'song-birthday', melody: 'birthday' },
+        { id: 'song-rowboat', melody: 'rowboat' },
+    ];
+
+    buttons.forEach(({ id, melody }) => {
+        const button = document.getElementById(id);
+        if (button) {
+            button.addEventListener('click', () => toggleMelody(melody, button));
+        }
+    });
+}
+
+function toggleMelody(melodyKey, button) {
+    // If this melody is already playing, stop it
+    if (currentMelody === melodyKey) {
+        stopMelody();
+        return;
+    }
+
+    // Stop any currently playing melody
+    stopMelody();
+
+    // Start the new melody
+    currentMelody = melodyKey;
+    updateSongButtonStates();
+    playMelody(melodyKey);
+}
+
+function stopMelody() {
+    // Clear all scheduled timeouts
+    melodyTimeouts.forEach(timeout => clearTimeout(timeout));
+    melodyTimeouts = [];
+    currentMelody = null;
+    updateSongButtonStates();
+}
+
+function updateSongButtonStates() {
+    const buttons = document.querySelectorAll('.song-button');
+    buttons.forEach(button => {
+        const melodyKey = button.id.replace('song-', '');
+        if (currentMelody === melodyKey) {
+            button.classList.add('playing');
+        } else {
+            button.classList.remove('playing');
+        }
+    });
+}
+
+function playMelody(melodyKey) {
+    const melody = melodies[melodyKey];
+    if (!melody) return;
+
+    const beatDuration = 60000 / melody.tempo; // milliseconds per beat
+    let currentTime = 0;
+
+    melody.notes.forEach((noteData, index) => {
+        const timeout = setTimeout(() => {
+            playMelodyNote(noteData.note);
+
+            // If this is the last note, reset after it finishes
+            if (index === melody.notes.length - 1) {
+                const noteLength = beatDuration * noteData.duration;
+                const resetTimeout = setTimeout(() => {
+                    if (currentMelody === melodyKey) {
+                        stopMelody();
+                    }
+                }, noteLength);
+                melodyTimeouts.push(resetTimeout);
+            }
+        }, currentTime);
+
+        melodyTimeouts.push(timeout);
+        currentTime += beatDuration * noteData.duration;
+    });
+}
+
+function playMelodyNote(noteName) {
+    // Parse note name (e.g., 'C', 'C5', 'G')
+    let noteObj = null;
+
+    // Check if note has octave specified (e.g., 'C5')
+    if (noteName.length > 1 && !isNaN(noteName[1])) {
+        const name = noteName[0];
+        const octave = parseInt(noteName[1]);
+        noteObj = notes.find(n => n.name === name && n.baseOctave === octave);
+    } else {
+        // No octave specified, use base octave 4
+        noteObj = notes.find(n => n.name === noteName && n.baseOctave === 4);
+    }
+
+    if (noteObj) {
+        playNote(noteObj);
+        visualizeMelodyNote(noteObj);
+    }
+}
+
+function visualizeMelodyNote(note) {
+    const keyEl = getKeyElement(note);
+    if (keyEl) {
+        keyEl.classList.add('is-active');
+        // Remove visual feedback after a short time
+        setTimeout(() => {
+            keyEl.classList.remove('is-active');
+        }, 200);
+    }
 }
