@@ -1,3 +1,8 @@
+:root {
+    --color-background: #2a2a2a;
+    --color-foreground: #e8e8e8;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +12,8 @@
 body {
     font-family: 'Courier New', Courier, monospace;
     line-height: 1.6;
-    color: #e8e8e8;
-    background: #2a2a2a;
+    color: var(--color-foreground);
+    background: var(--color-background);
     font-size: 22.5px;
     position: relative;
 }
@@ -106,7 +111,7 @@ li::before {
 }
 
 a {
-    color: #e8e8e8;
+    color: var(--color-foreground);
     text-decoration: none;
 }
 
@@ -125,7 +130,7 @@ a:hover .char {
 }
 
 a:hover .char {
-    color: var(--rainbow-color, #e8e8e8);
+    color: var(--rainbow-color, var(--color-foreground));
 }
 
 @keyframes bounce {
