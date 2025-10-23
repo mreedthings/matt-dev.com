@@ -52,70 +52,10 @@ body::after {
     z-index: 3;
 }
 
-.header-container {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 2.5rem;
-}
-
 h1 {
     font-size: 1.875rem;
     font-weight: 400;
-    margin-bottom: 0;
-}
-
-.logo-doodle {
-    position: relative;
-    width: 118px;
-    height: 112px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.paper-logo {
-    flex-shrink: 0;
-    cursor: pointer;
-    width: 82px;
-    height: 102px;
-    transform-origin: 50% 50%;
-    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.4));
-    will-change: transform;
-    z-index: 1;
-}
-
-.paper-logo:hover {
-    transform: translateY(-3px) rotate(-1.5deg);
-    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
-}
-
-.paper-logo--animating {
-    pointer-events: none;
-}
-
-.paper-logo--ball #paper-scribble {
-    stroke: #4f483c;
-}
-
-.pencil-logo {
-    position: absolute;
-    width: 130px;
-    height: 44px;
-    top: calc(60% + var(--pencil-shift-y, 0px));
-    left: calc(70% + var(--pencil-shift-x, 0px));
-    transform-origin: 15% 65%;
-    transform: rotate(var(--pencil-angle, -12deg));
-    transition: transform 0.25s ease, filter 0.25s ease;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
-    z-index: 2;
-    pointer-events: none;
-}
-
-.pencil-logo:hover {
-    transform: rotate(calc(var(--pencil-angle, -12deg) + 4deg)) translate(2px, -2px);
-    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5));
+    margin-bottom: 2.5rem;
 }
 
 h2 {

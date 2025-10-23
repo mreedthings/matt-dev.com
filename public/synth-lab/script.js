@@ -909,12 +909,50 @@ function buildToneDefinition() {
                 ratio: state.overtoneRatio,
                 decay: state.overtoneDecay,
             },
+            subBass: {
+                gain: state.subBassGain,
+                decay: state.subBassDecay,
+            },
             noise: {
                 amount: state.noiseAmount,
                 highpassFrequency: state.noiseHighpass,
                 q: state.noiseQ,
                 decay: state.noiseDecay,
             },
+        },
+        filter: {
+            enabled: state.filterEnabled,
+            type: state.filterType,
+            cutoff: state.filterCutoff,
+            resonance: state.filterResonance,
+            envelopeAmount: state.filterEnvAmount,
+            envelope: {
+                attack: state.filterAttack,
+                decay: state.filterDecay,
+                sustain: state.filterSustain,
+                release: state.filterRelease,
+            },
+        },
+        effects: {
+            distortion: {
+                amount: state.distortionAmount,
+            },
+            delay: {
+                enabled: state.delayEnabled,
+                time: state.delayTime,
+                feedback: state.delayFeedback,
+                mix: state.delayMix,
+            },
+            reverb: {
+                enabled: state.reverbEnabled,
+                mix: state.reverbMix,
+            },
+        },
+        lfo: {
+            enabled: state.lfoEnabled,
+            rate: state.lfoRate,
+            amount: state.lfoAmount,
+            target: state.lfoTarget,
         },
     };
 }
