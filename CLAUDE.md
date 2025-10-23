@@ -16,16 +16,20 @@ Personal website and learning platform for matt-dev.com. This project serves mul
 ```
 matt-dev.com/
 ├── public/              # Website root
-│   ├── index.html       # Homepage
+│   ├── index.html       # Homepage with hand-drawn typewriter aesthetic
 │   ├── style.css
-│   └── tuner/           # Guitar tuner web app
+│   ├── script.js
+│   ├── tuner/           # Guitar tuner web app
+│   └── typewriter/      # Interactive typewriter simulator
 ├── .github/workflows/   # CI/CD automation
 ├── docs/deployment/     # Infrastructure documentation
 └── scripts/             # Deployment scripts
 ```
 
 **Projects:**
+- **Homepage** (`/`) - Portfolio landing page with hand-drawn typewriter aesthetic
 - **Guitar Tuner** (`/tuner`) - Interactive web-based guitar tuner with keyboard controls and visual feedback
+- **Typewriter** (`/typewriter`) - Interactive typewriter simulator with realistic sound and behavior
 
 ## Infrastructure
 
@@ -67,6 +71,24 @@ This project uses a **single VPS with multiple directories** approach for enviro
 - A record: `dev.matt-dev.com` → VPS IP
 - Web server (nginx/Apache) routes based on domain
 
+## Design System
+
+**Visual Aesthetic:** Hand-drawn typewriter theme
+- **Typography:** Courier New monospace font
+- **Color Scheme:** Dark backgrounds (#1a1a1a to #2a2a2a) with light text (#e8e8e8)
+- **Backgrounds:** Subtle radial gradients + SVG noise texture for vintage feel
+- **Character Effects:** Random rotation, vertical offset, letter spacing, and opacity variations
+- **Hand-drawn Elements:** Wobbly SVG boxes with double-traced outlines
+- **Animations:** 8fps frame-based animations for amateur hand-drawn feel
+- **Interactivity:** Subtle hover effects without overwhelming color changes
+
+**Key Visual Techniques:**
+- Characters wrapped in `<span class="char">` with random transformations
+- Hand-drawn boxes using `generateWobblyLine()` with random variations
+- Animation frames pre-generated and cycled at 8fps (125ms intervals)
+- Responsive boxes that redraw on window resize
+- Z-index layering: gradients (1) → noise (2) → content (3)
+
 ## Development Philosophy
 
 This is a learning-focused project. When working with code here:
@@ -75,6 +97,7 @@ This is a learning-focused project. When working with code here:
 - Think about environment separation (dev/test/prod) from the start
 - Balance between best practices and pragmatic solutions for a hobby project
 - Document deployment and infrastructure decisions for future reference
+- Maintain consistent hand-drawn typewriter aesthetic across all projects
 
 ## Key Learning Areas
 

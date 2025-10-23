@@ -1,0 +1,238 @@
+:root {
+    color-scheme: dark;
+    --bg: #1f1f1f;
+    --panel: #2a2a2a;
+    --border: #3a3a3a;
+    --accent: #e8e8e8;
+    --accent-soft: #cfcfcf;
+    --primary: #7dd3fc;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Special Elite', 'Courier New', Courier, monospace;
+    background: radial-gradient(circle at 20% 20%, #27202a, transparent 55%),
+        radial-gradient(circle at 80% 0%, #222c30, transparent 60%),
+        radial-gradient(circle at 50% 80%, #1f222c, transparent 60%),
+        var(--bg);
+    color: var(--accent);
+    min-height: 100vh;
+}
+
+.page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem;
+}
+
+.header h1 {
+    font-weight: 400;
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.header .tagline {
+    margin: 0 0 2rem;
+    color: var(--accent-soft);
+}
+
+h2 {
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.keyboard-section,
+.controls,
+.preview {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+}
+
+.hint {
+    font-size: 0.875rem;
+    color: var(--accent-soft);
+    margin-top: 1rem;
+}
+
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(60px, 1fr));
+    gap: 0.75rem;
+}
+
+.keyboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.octave-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.octave-button {
+    appearance: none;
+    background: var(--primary);
+    color: #0b1120;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(125, 211, 252, 0.25);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.octave-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(125, 211, 252, 0.3);
+}
+
+.octave-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.octave-display {
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+}
+
+.key {
+    position: relative;
+    background: linear-gradient(160deg, #f7f7f7, #c7c7c7);
+    color: #111;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 1.25rem 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #888, 0 12px 20px rgba(0, 0, 0, 0.35);
+    transition: transform 0.05s ease, box-shadow 0.08s ease;
+}
+
+.key:active,
+.key.is-active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #666, 0 10px 18px rgba(0, 0, 0, 0.4);
+}
+
+.key .label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.key .binding {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: #444;
+}
+
+.group {
+    margin-bottom: 2rem;
+}
+
+.group-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.group-title span {
+    color: var(--accent-soft);
+    font-size: 0.95rem;
+}
+
+.control {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1fr 60px;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.35rem;
+}
+
+.control label {
+    font-size: 0.95rem;
+    color: var(--accent);
+}
+
+.control input[type="range"] {
+    width: 100%;
+}
+
+.control select,
+.control input[type="range"] {
+    accent-color: var(--primary);
+}
+
+.value {
+    font-size: 0.9rem;
+    text-align: right;
+    color: var(--accent-soft);
+}
+
+.preview pre {
+    background: rgba(17, 17, 17, 0.65);
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+code {
+    color: #cde9ff;
+}
+
+@media (max-width: 720px) {
+    .keyboard {
+        grid-template-columns: repeat(4, minmax(60px, 1fr));
+    }
+
+    .keyboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .control {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .value {
+        text-align: left;
+    }
+}
